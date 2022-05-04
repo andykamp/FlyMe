@@ -38,3 +38,11 @@ edge cases:
 - do i need to take via-flights into account
 - use lastupdate to reduct the payload and change
 - can one use private caching with cors and without adding it to the server?
+
+
+
+NOTES:
+- to inconsisten with typescript () and ({}) inputs. Need to find the flow with typescript
+- takes some shortcuts with type 'any' when it gets complicated
+- incosistent with type/interface naming
+- mapping airplanes and statuscodes indifferently was suboptimal because it is needed in the flightApi funciton 

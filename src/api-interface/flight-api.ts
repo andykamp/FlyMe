@@ -2,6 +2,7 @@ import { BaseEndpoint } from "./base-endpoint";
 import { callEndpoint } from "./utils";
 import X2JS from "x2js";
 import { airportsInNorway } from "../data";
+import { diff_hours } from "./utils";
 
 // ---------------------------------------------
 // Types and interfaces
@@ -87,6 +88,70 @@ export class FlightApi extends BaseEndpoint {
 
   _isNorwegianAirport = (targetA: string) => {
     return Boolean(this.airportCodeToName[targetA.toLowerCase()]);
+  };
+
+  _getFlightInfo = (flight_id: string) => {
+    let departureInfoMissing = false,
+      arrivalInfoMissing = false;
+    let departureInfo = this.departures[flight_id];
+    let arrivalInfo = this.arrivals[flight_id];
+    if (!departureInfo) {
+      departureInfo = {};
+      departureInfoMissing = true;
+    }
+
+    if (!arrivalInfo) {
+      arrivalInfo = {};
+      arrivalInfoMissing = true;
+    }
+
+    if (departureInfoMissing && arrivalInfoMissing) {
+      console.error("missing flight", flight_id);
+      return {};
+    }
+    const readFrom = departureInfoMissing ? arrivalInfo : departureInfo;
+
+    const dom_int_lookup = {
+      D: "Domestic",
+      I: "International",
+      S: "Shengen",
+    };
+
+    // const diffHours = diff_hours(fromDate, toDate) + "h";
+    // const date = new Date(to.schedule_time);
+    // const dateFormatted = to.schedule_time
+    //   ? `${date.getHours()}:${date.getMinutes()}`
+    //   : "-";
+    const info = {
+      flight_id: flight_id,
+      departureTime: departureInfo.schedule_time,
+      arrivalTime: arrivalInfo.schedule_time,
+      departureTimeFormatted: departureInfo.schedule_time,
+      arrivalTimeFormatted: arrivalInfo.schedule_time,
+      duration: "--",
+      departureStatus: departureInfo.status,
+      arrivalStatus: arrivalInfo.status,
+      to_airport: departureInfo.airport,
+      to_airport_full: this.airportCodeToName[
+        departureInfo.airport.toLowerCase()
+      ],
+      to_city: this.airportCodeToName[
+        departureInfo.airport.toLowerCase()
+      ].split(" ")[0],
+      from_airport: arrivalInfo.airport,
+      from_airport_full: this.airportCodeToName[
+        arrivalInfo.airport.toLowerCase()
+      ],
+      form_city: this.airportCodeToName[
+        arrivalInfo.airport.toLowerCase()
+      ].split(" ")[0],
+      dom_int: dom_int_lookup[readFrom.dom_int] || "_",
+      airline: "TODO", // airline_lookup[readFrom.airline]
+      via_airport: "TODO",
+      status: "TODOOOO",
+    };
+    console.log("infooo", info);
+    return info;
   };
 
   // ---------------------------------------------

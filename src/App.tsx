@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 import FlyMeLogo from "./FlyMeLogo.svg";
 import { ApiContainer } from "./api-interface";
-import { getFromToAirport, getFromToAirports } from "./api-interface/utils";
+import { getFromToAirport } from "./api-interface/utils";
 import { airportsInNorway } from "./data";
 import { ThemeProvider } from "styled-components";
 import { ThemeContext, getTheme } from "./theme";
@@ -29,7 +29,7 @@ import {
   Row,
   Col,
 } from "./styled-components";
-import { FilteredList, FilteredListSeperated } from "./List";
+import { FilteredListSeperated } from "./List";
 
 const { TabPane } = Tabs;
 const { Option } = Select;
@@ -345,20 +345,6 @@ function App() {
                 <FilteredListSeperated
                   selectedAirport={selectedAirport}
                   flight_ids={filteredFromAirport}
-                  from={ApiContainer.FlightApi.departures}
-                  to={ApiContainer.FlightApi.arrivals}
-                />
-              )}
-              {false && filteredFromAirport && tab == "1" && (
-                <FilteredList
-                  flight_ids={filteredFromAirport}
-                  from={ApiContainer.FlightApi.departures}
-                  to={ApiContainer.FlightApi.arrivals}
-                />
-              )}
-              {false && filteredFromToAirport && tab == "2" && (
-                <FilteredList
-                  flight_ids={filteredFromToAirport}
                   from={ApiContainer.FlightApi.departures}
                   to={ApiContainer.FlightApi.arrivals}
                 />

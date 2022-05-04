@@ -1,5 +1,4 @@
 import { ApiContainer } from "./api-interface";
-import { diff_hours } from "./api-interface/utils";
 import { Tooltip } from "antd";
 import {
   StyledList,
@@ -33,19 +32,19 @@ export const FilteredListSeperated = ({
   console.log("both", both);
   const bb = both.map((f) => ({ id: f, from: from[f], to: to[f] }));
   console.log("bb", bb);
+  flight_ids.forEach((f) => ApiContainer.FlightApi._getFlightInfo(f));
+
   // arrival is every airport in 'from' dict that has the .aiport that we target
   // departure is every airport in 'to' dict that has the .aiport that we target
   return (
     <Row style={{ gap: 8 }}>
       <StyledList>
         {flight_ids
-          .filter((f) => to[f] && to[f].airport == uppercaseAirport)
+          .filter((f) => to[f] && to[f].source_airport == uppercaseAirport)
           .map((f, i) => (
             <ListItemArrival
               key={f}
-              flight_id={f}
-              from={from[f]}
-              to={to[f]}
+              flightInfo={ApiContainer.FlightApi._getFlightInfo(f)}
               index={i}
             />
           ))}
@@ -56,9 +55,7 @@ export const FilteredListSeperated = ({
           .map((f, i) => (
             <ListItemDeparture
               key={f}
-              flight_id={f}
-              from={from[f]}
-              to={to[f]}
+              flightInfo={ApiContainer.FlightApi._getFlightInfo(f)}
               index={i}
             />
           ))}
@@ -67,144 +64,57 @@ export const FilteredListSeperated = ({
   );
 };
 
-interface FilteredListProps {
-  flight_ids: string[];
-  from: any;
-  to: any;
-}
-
-export const FilteredList = ({ flight_ids, from, to }: FilteredListProps) => {
-  return (
-    <StyledList>
-      {flight_ids.map((f, i) => (
-        <ListItem flight_id={f} from={from[f]} to={to[f]} index={i} />
-      ))}
-    </StyledList>
-  );
-};
-
 interface ListItemInterface {
-  flight_id: string;
-  from: FlightInterface;
-  to: FlightInterface;
+  flightInfo: any;
   index: number;
 }
 
-export const ListItemArrival = ({
-  flight_id,
-  from,
-  to,
-  index,
-}: ListItemInterface) => {
-  if (!to) to = { source_airport: "unknown", airport: "unknown" };
-  if (!from) from = { source_airport: "unknown", airport: "unknown" };
-  const fromAirport = to.source_airport;
-
-  const date = new Date(from.schedule_time);
-  const dateFormatted = from.schedule_time
-    ? `${date.getHours()}:${date.getMinutes()}`
-    : "-";
+export const ListItemArrival = ({ flightInfo, index }: ListItemInterface) => {
+  const {
+    flight_id,
+    arrivalTimeFormatted,
+    from_airport,
+    from_city,
+    arrivalStatus,
+  } = flightInfo;
 
   return (
     <StyledListItem key={flight_id} altNum={index % 2 == 0}>
       <div>{flight_id}</div>
       <Row style={{ gap: 8 }}>
-        <div>{dateFormatted}</div>
+        <div>{arrivalTimeFormatted}</div>
       </Row>
       <Row style={{ gap: 8 }}>
-        <Tooltip
-          title={
-            ApiContainer.FlightApi.airportCodeToName[
-              fromAirport.toLowerCase()
-            ] || "unknown"
-          }
-        >
-          <div>{fromAirport}</div>
+        <Tooltip title={from_city}>
+          <div>{from_airport}</div>
         </Tooltip>
       </Row>
-      <Status />
+      <Status status={arrivalStatus} />
     </StyledListItem>
   );
 };
 
-export const ListItemDeparture = ({
-  flight_id,
-  from,
-  to,
-  index,
-}: ListItemInterface) => {
-  if (!from) from = { source_airport: "unknown", airport: "unknown" };
-  if (!to) to = { source_airport: "unknown", airport: "unknown" };
+export const ListItemDeparture = ({ flightInfo, index }: ListItemInterface) => {
+  const {
+    flight_id,
+    departureTimeFormatted,
+    to_airport,
+    to_city,
+    departureStatus,
+  } = flightInfo;
 
-  const toAirport = from.source_airport;
-
-  const date = new Date(to.schedule_time);
-  const dateFormatted = to.schedule_time
-    ? `${date.getHours()}:${date.getMinutes()}`
-    : "-";
   return (
     <StyledListItem key={flight_id} altNum={index % 2 == 0}>
       <div>{flight_id}</div>
       <Row style={{ gap: 8 }}>
-        <div>{dateFormatted}</div>
+        <div>{departureTimeFormatted}</div>
       </Row>
       <Row style={{ gap: 8 }}>
-        <Tooltip
-          title={
-            ApiContainer.FlightApi.airportCodeToName[toAirport.toLowerCase()] ||
-            "unknown"
-          }
-        >
-          <div>{toAirport}</div>
+        <Tooltip title={to_city}>
+          <div>{to_airport}</div>
         </Tooltip>
       </Row>
-      <Status />
-    </StyledListItem>
-  );
-};
-
-export const ListItem = ({ flight_id, from, to, index }: ListItemInterface) => {
-  if (!from) from = { airport: "unknown" };
-  if (!to) to = { airport: "unknown" };
-  const fromAirport = from.airport.toLowerCase();
-  const toAirport = to.airport.toLowerCase();
-  const fromDate = new Date(from.schedule_time);
-  const toDate = new Date(to.schedule_time);
-  const diffHours = diff_hours(fromDate, toDate) + "h";
-
-  return (
-    <StyledListItem key={flight_id} altNum={index % 2 == 0}>
-      <div>{from.flight_id}</div>
-      <Row style={{ gap: 8 }}>
-        <div>{`${fromDate.getHours()}:${fromDate.getMinutes()}`}</div>
-        <div>-</div>
-        <div>{`${toDate.getHours()}:${toDate.getMinutes()}`}</div>
-        <div>{diffHours}</div>
-        {from.via_airport && <div>{from.via_airport}</div>}
-        {!from.via_airport && <div>(Direct flight)</div>}
-      </Row>
-      <Row style={{ gap: 8 }}>
-        <Tooltip
-          title={
-            ApiContainer.FlightApi.airportCodeToName[fromAirport] || "unknown"
-          }
-        >
-          <div>{from.airport}</div>
-        </Tooltip>
-        <div>-</div>
-        <Tooltip
-          title={
-            ApiContainer.FlightApi.airportCodeToName[toAirport] || "unknown"
-          }
-        >
-          <div>{to.airport}</div>
-        </Tooltip>
-      </Row>
-      <Row style={{ gap: 8 }}>
-        <StyledLabel>Gate: </StyledLabel>
-        <StyledValue>{from.gate || "_"}</StyledValue>
-      </Row>
-      <Status status={to.status} />
+      <Status status={departureStatus} />
     </StyledListItem>
   );
 };
