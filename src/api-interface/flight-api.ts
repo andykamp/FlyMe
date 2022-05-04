@@ -24,10 +24,16 @@ export interface FlightInterface {
   airport: string;
   check_in: string;
   delayed: string;
-  gate: string;
-  status: { _code: string; _time: string };
+  gate?: string;
+  via_airport?: string;
+  status: FlightStatusInterface;
   _uniqueID: string;
   source_airport: string;
+}
+
+export interface FlightStatusInterface {
+  code: string;
+  time: string;
 }
 
 interface AirportDataResponse {
@@ -291,7 +297,7 @@ export class FlightApi extends BaseEndpoint {
     timeTo = 24,
     direction = null,
     lastUpdate = null,
-  }: getAirportDataProps): Promise<AirportDataResponse> {
+  }: getAirportDataProps) {
     let queryString = `TimeFrom=${timeFrom}&TimeTo=${timeTo}&airport=${airport}`;
 
     if (direction) queryString += `&direction=${direction}`;
