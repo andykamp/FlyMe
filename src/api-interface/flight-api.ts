@@ -62,7 +62,6 @@ interface pollAiportDataProps extends pollFullDataProps {
 
 export class FlightApi extends BaseEndpoint {
   airportCodeToName: any;
-  loadedSince: { [key: string]: number } = {};
   departures: { [key: string]: FlightInterface } = {};
   arrivals: { [key: string]: FlightInterface } = {};
 
@@ -81,7 +80,6 @@ export class FlightApi extends BaseEndpoint {
     airportsInNorway.forEach((a) => {
       this.airportCodeToName[a.code.toLowerCase()] = a.name;
     });
-    console.log("codeToName", this.airportCodeToName);
   };
 
   //
@@ -193,7 +191,6 @@ export class FlightApi extends BaseEndpoint {
     // empty data
     this.departures = {};
     this.arrivals = {};
-    this.loadedSince = {};
 
     const t1_tot = performance.now();
 
@@ -222,11 +219,8 @@ export class FlightApi extends BaseEndpoint {
 
     // parse result for all promises
     const t1_parse = performance.now();
-    console.log("allData", allData);
     for (let airportData of allData) {
       const { _name } = airportData.airport;
-      const { _lastUpdate } = airportData.airport.flights;
-      this.loadedSince[_name] = new Date(_lastUpdate).getTime(); // store timestamp
       let flights = airportData.airport.flights.flight;
       if (!flights) continue;
       // handle edge-case where 1 flight is given as object and not list
@@ -253,15 +247,12 @@ export class FlightApi extends BaseEndpoint {
         (t2_tot - t1_tot) / 100
       })s`
     );
-
-    console.log("loadedsince", this.loadedSince);
   }
 
   async getPopulatedAirportData({ airport }: { airport: string }) {
     // empty data
     this.departures = {};
     this.arrivals = {};
-    this.loadedSince = {};
 
     const t1_tot = performance.now();
 
@@ -272,10 +263,7 @@ export class FlightApi extends BaseEndpoint {
 
     // read the aiports relevant to query further
     const { _name } = airportData.airport;
-    console.log("Fetcing for ", _name);
 
-    const { _lastUpdate } = airportData.airport.flights;
-    this.loadedSince[_name] = new Date(_lastUpdate).getTime(); // store timestamp
     let flights = airportData.airport.flights.flight;
     if (!flights) return;
     // handle edge-case where 1 flight is given as object and not list
@@ -320,9 +308,6 @@ export class FlightApi extends BaseEndpoint {
     // parse result for all promises
     const t1_parse = performance.now();
     for (let data of allData) {
-      console.log("flight", data.airport);
-      const { _lastUpdate } = data.airport.flights;
-      this.loadedSince[data.airport._name] = new Date(_lastUpdate).getTime(); // store timestamp
       let flights = data.airport.flights.flight;
       if (!flights) continue;
       // handle edge-case where 1 flight is given as object and not list
@@ -332,7 +317,6 @@ export class FlightApi extends BaseEndpoint {
         // if (!this._isNorwegianAirport(airport)) continue;
         // if (f.dom_int != "D") continue;
         if (f.airport.toLowerCase() != airport) continue;
-        console.log("airrttt", f.airport, airport, data.airport._name);
         // TODO make sure it is domestic!!!
         // add info about what airport it
         f.source_airport = data.airport._name;
@@ -372,35 +356,6 @@ export class FlightApi extends BaseEndpoint {
     const body = {};
     const decode = (xhr: XMLHttpRequest) => new X2JS().xml2js(xhr.response);
 
-    const contentType = "text/xml";
-    return await callEndpoint({ url, method, body, decode, contentType });
-  }
-
-  // TODO should also only be done for relevant search?
-
-  async getAirports() {
-    const url = this.getApiUrl("airportNames.asp?airport=BGO", "");
-    const method = "GET";
-    const body = {};
-    const decode = (xhr: XMLHttpRequest) => new X2JS().xml2js(xhr.response);
-    const contentType = "text/xml";
-    return await callEndpoint({ url, method, body, decode, contentType });
-  }
-
-  async getAirlines() {
-    const url = this.getApiUrl("airlineNames.asp", "");
-    const method = "GET";
-    const body = {};
-    const decode = (xhr: XMLHttpRequest) => new X2JS().xml2js(xhr.response);
-    const contentType = "text/xml";
-    return await callEndpoint({ url, method, body, decode, contentType });
-  }
-
-  async getStatusConfig() {
-    const url = this.getApiUrl("flightStatuses.asp?code=A", "");
-    const method = "GET";
-    const body = {};
-    const decode = (xhr: XMLHttpRequest) => new X2JS().xml2js(xhr.response);
     const contentType = "text/xml";
     return await callEndpoint({ url, method, body, decode, contentType });
   }

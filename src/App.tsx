@@ -339,17 +339,13 @@ function App() {
                 </StyledTabs>
               </Col>
             </StyledPanel>
-            <StyledListPanel>
-              {loading && <div>loading....</div>}
-              {selectedAirport && filteredFromAirport && tab == "1" && (
-                <FilteredListSeperated
-                  selectedAirport={selectedAirport}
-                  flight_ids={filteredFromAirport}
-                  from={ApiContainer.FlightApi.departures}
-                  to={ApiContainer.FlightApi.arrivals}
-                />
-              )}
-            </StyledListPanel>
+            {loading && <div>loading....</div>}
+            {selectedAirport && filteredFromAirport && tab == "1" && (
+              <FilteredListSeperated
+                selectedAirport={selectedAirport}
+                flight_ids={filteredFromAirport}
+              />
+            )}
           </StyledContent>
         </StyledApp>
       </ThemeProvider>

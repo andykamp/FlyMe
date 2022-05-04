@@ -46,3 +46,4 @@ NOTES:
 - takes some shortcuts with type 'any' when it gets complicated
 - incosistent with type/interface naming
 - mapping airplanes and statuscodes indifferently was suboptimal because it is needed in the flightApi funciton 
+- not immutable data atm

@@ -1,6 +1,7 @@
 import { ApiContainer } from "./api-interface";
 import { Tooltip } from "antd";
 import {
+  StyledListPanel,
   StyledList,
   StyledListItem,
   StyledLabel,
@@ -15,52 +16,39 @@ import {
 interface FilteredListSeperatedProps {
   selectedAirport: string;
   flight_ids: string[];
-  from: any;
-  to: any;
 }
 
 export const FilteredListSeperated = ({
   selectedAirport,
   flight_ids,
-  from,
-  to,
 }: FilteredListSeperatedProps) => {
   const uppercaseAirport = selectedAirport.toUpperCase();
 
-  console.log("flight_ids", flight_ids);
-  const both = flight_ids.filter((f) => from[f] && to[f]);
-  console.log("both", both);
-  const bb = both.map((f) => ({ id: f, from: from[f], to: to[f] }));
-  console.log("bb", bb);
-  flight_ids.forEach((f) => ApiContainer.FlightApi._getFlightInfo(f));
+  const flightsWithInfo = flight_ids.map((f) =>
+    ApiContainer.FlightApi._getFlightInfo(f)
+  );
 
-  // arrival is every airport in 'from' dict that has the .aiport that we target
-  // departure is every airport in 'to' dict that has the .aiport that we target
+  console.log("flightWidthInfo", flightsWithInfo);
+
   return (
-    <Row style={{ gap: 8 }}>
-      <StyledList>
-        {flight_ids
-          .filter((f) => to[f] && to[f].source_airport == uppercaseAirport)
-          .map((f, i) => (
-            <ListItemArrival
-              key={f}
-              flightInfo={ApiContainer.FlightApi._getFlightInfo(f)}
-              index={i}
-            />
-          ))}
-      </StyledList>
-      <StyledList>
-        {flight_ids
-          .filter((f) => from[f] && from[f].airport == uppercaseAirport)
-          .map((f, i) => (
-            <ListItemDeparture
-              key={f}
-              flightInfo={ApiContainer.FlightApi._getFlightInfo(f)}
-              index={i}
-            />
-          ))}
-      </StyledList>
-    </Row>
+    <StyledListPanel>
+      <Row style={{ gap: 8 }}>
+        <StyledList>
+          {flightsWithInfo
+            .filter((f) => f.to_airport == uppercaseAirport)
+            .map((f, i) => (
+              <ListItemArrival key={i} flightInfo={f} index={i} />
+            ))}
+        </StyledList>
+        <StyledList>
+          {flightsWithInfo
+            .filter((f) => f.from_airport == uppercaseAirport)
+            .map((f, i) => (
+              <ListItemDeparture key={i} flightInfo={f} index={i} />
+            ))}
+        </StyledList>
+      </Row>
+    </StyledListPanel>
   );
 };
 
