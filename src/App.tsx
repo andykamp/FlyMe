@@ -6,11 +6,7 @@ import { airportsInNorway } from "./data";
 import { ThemeProvider } from "styled-components";
 import { ThemeContext, getTheme } from "./theme";
 import { Tabs, Select, Tooltip, Tag } from "antd";
-import {
-  SwapOutlined,
-  CheckCircleOutlined,
-  SyncOutlined,
-} from "@ant-design/icons";
+import { CheckCircleOutlined, SyncOutlined } from "@ant-design/icons";
 import {
   GlobalStyle,
   StyledApp,
@@ -22,10 +18,8 @@ import {
   StyledTabs,
   StyledTitle,
   StyledSelect,
-  StyledListPanel,
   StyledParagraph,
   StyledLink,
-  StyledIconContainer,
   Row,
   Col,
 } from "./styled-components";
@@ -73,15 +67,8 @@ function App() {
   const [selectedTheme, setSelectedTheme] = useState(getTheme("dark"));
   const [loading, setLoading] = useState(false);
   const [selectedAirport, setSelectedAirport] = useState<null | string>(null);
-  const [selectedAirportTo, setSelectedAirportTo] = useState<null | string>(
-    null
-  );
-  const [selectedAirportFrom, setSelectedAirportFrom] = useState<null | string>(
-    null
-  );
   const [dataLastUpdated, setDataLastUpdated] = useState(0);
   const [filteredFromAirport, setFilteredFromAirport] = useState([]);
-  const [filteredFromToAirport, setFilteredFromToAirport] = useState([]);
   const [tab, setTab] = useState("1");
   const [statusCodes, setStatusCodes] = useState({});
   const [airlines, setAirlines] = useState({});
@@ -114,18 +101,15 @@ function App() {
     if (!selectedAirport) return;
     console.log("data is fetched and polling started");
     const { departures, arrivals } = ApiContainer.FlightApi;
-    console.log("tofrom", departures, arrivals);
     const filterFrom = getFromToAirport({
       airport: selectedAirport,
       from: arrivals,
       to: departures,
     });
-    console.log("filterSigle", filterFrom);
     setFilteredFromAirport(filterFrom);
   }, [dataLastUpdated]);
 
   const airportChanged = (airport: string) => {
-    console.log("aiport", airport);
     setSelectedAirport(airport);
     setFilteredFromAirport([]);
     // we start a new poll every time the airport changes
@@ -145,30 +129,6 @@ function App() {
       waitTime: ACTIVE_POLL_INTERVAL,
       onUpdate: (loading: boolean) => setLoading(loading),
     });
-  };
-  const airportToChanged = (airport: string): void => {
-    setSelectedAirportTo(airport);
-    if (!selectedAirportFrom) setFilteredFromToAirport([]);
-    // const filterFromTo = getFromToAirports({
-    //   fromAirport: selectedAirportFrom,
-    //   toAirport: airport,
-    //   from: fullData.from,
-    //   to: fullData.to,
-    // });
-    // console.log("filterMulti", filterFromTo);
-    // setFilteredFromToAirport(filterFromTo);
-  };
-  const airportFromChanged = (airport: string): void => {
-    setSelectedAirportFrom(airport);
-    if (!selectedAirportTo) setFilteredFromToAirport([]);
-    // const filterFromTo = getFromToAirports({
-    //   fromAirport: airport,
-    //   toAirport: selectedAirportTo,
-    //   from: fullData.from,
-    //   to: fullData.to,
-    // });
-    // console.log("filterMulti", filterFromTo);
-    // setFilteredFromToAirport(filterFromTo);
   };
 
   const toggleTheme = (): void => {
@@ -268,71 +228,6 @@ function App() {
                             >{`(${a.code.toUpperCase()}) ${a.name}`}</Option>
                           ))}
                         </StyledSelect>
-                      </Col>
-                    </Row>
-                  </TabPane>
-                  <TabPane tab="From/To" key="2">
-                    <Row>
-                      <Col>
-                        <StyledTitle>From:</StyledTitle>
-                        <Select
-                          style={{ width: 300 }}
-                          onChange={airportFromChanged}
-                          value={selectedAirportFrom}
-                          showSearch
-                          placeholder="Search for airport"
-                          optionFilterProp="children"
-                          filterOption={(input, option) =>
-                            option.children
-                              .toLowerCase()
-                              .indexOf(input.toLowerCase()) >= 0
-                          }
-                          filterSort={(optionA, optionB) =>
-                            optionA.children
-                              .toLowerCase()
-                              .localeCompare(optionB.children.toLowerCase())
-                          }
-                        >
-                          {airportsInNorway.map((a) => (
-                            <Option
-                              key={a.code}
-                              value={a.code}
-                            >{`(${a.code.toUpperCase()}) ${a.name}`}</Option>
-                          ))}
-                        </Select>
-                      </Col>
-
-                      <StyledIconContainer>
-                        <SwapOutlined />
-                      </StyledIconContainer>
-                      <Col>
-                        <StyledTitle>To:</StyledTitle>
-                        <Select
-                          placeholder="Select airport"
-                          style={{ width: 300 }}
-                          onChange={airportToChanged}
-                          value={selectedAirportTo}
-                          showSearch
-                          placeholder="Search for airport"
-                          optionFilterProp="children"
-                          filterOption={(input, option) =>
-                            option.children
-                              .toLowerCase()
-                              .indexOf(input.toLowerCase()) >= 0
-                          }
-                          filterSort={(optionA, optionB) =>
-                            optionA.children
-                              .toLowerCase()
-                              .localeCompare(optionB.children.toLowerCase())
-                          }
-                        >
-                          {airportsInNorway.map((a) => (
-                            <Option
-                              key={a.code}
-                              value={a.code}
-                            >{`(${a.code.toUpperCase()}) ${a.name}`}</Option>
-                          ))}
-                        </Select>
                       </Col>
                     </Row>
                   </TabPane>
