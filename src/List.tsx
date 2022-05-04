@@ -31,8 +31,8 @@ export const FilteredListSeperated = ({
   console.log("flightWidthInfo", flightsWithInfo);
 
   return (
-    <StyledListPanel>
-      <Row style={{ gap: 8 }}>
+    <Row style={{ gap: 24, width: "100%" }}>
+      <StyledListPanel>
         <StyledList>
           {flightsWithInfo
             .filter((f) => f.to_airport == uppercaseAirport)
@@ -40,6 +40,8 @@ export const FilteredListSeperated = ({
               <ListItemArrival key={i} flightInfo={f} index={i} />
             ))}
         </StyledList>
+      </StyledListPanel>
+      <StyledListPanel>
         <StyledList>
           {flightsWithInfo
             .filter((f) => f.from_airport == uppercaseAirport)
@@ -47,8 +49,8 @@ export const FilteredListSeperated = ({
               <ListItemDeparture key={i} flightInfo={f} index={i} />
             ))}
         </StyledList>
-      </Row>
-    </StyledListPanel>
+      </StyledListPanel>
+    </Row>
   );
 };
 

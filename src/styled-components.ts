@@ -12,40 +12,40 @@ export const GlobalStyle = createGlobalStyle<{ theme: ThemeInterface }>`
    font-family: ${(props) => props.theme.general.fontFamily};
    background: ${(props) => props.theme.general.bg}
 
-// ---------------------------------------------
-   // Ant d 
-   // ---------------------------------------------
-   .ant-select-dropdown {
-     background-color: ${(props) => props.theme.general.bg} !important ;
-     color: ${(props) => props.theme.general.textColor} !important;
-     font-size: ${(props) => props.theme.general.fontSize} !important;
-   }
-   .ant-select-item{
-     background-color: ${(props) => props.theme.general.bg};
-     color: ${(props) => props.theme.general.textColor}; 
-     font-size: ${(props) => props.theme.general.fontSize} !important;
-   }
+// // ---------------------------------------------
+//    // Ant d 
+//    // ---------------------------------------------
+//    .ant-select-dropdown {
+//      background-color: ${(props) => props.theme.general.bg} !important ;
+//      color: ${(props) => props.theme.general.textColor} !important;
+//      font-size: ${(props) => props.theme.general.fontSize} !important;
+//    }
+//    .ant-select-item{
+//      background-color: ${(props) => props.theme.general.bg};
+//      color: ${(props) => props.theme.general.textColor}; 
+//      font-size: ${(props) => props.theme.general.fontSize} !important;
+//    }
   
-   .ant-select-item-option-selected:not(.ant-select-item-option-disabled) {
-     font-weight: 600;
-     color: ${(props) => props.theme.general.textColor}; 
-     background-color: ${(props) => props.theme.general.greySelection};
-   }
+//    .ant-select-item-option-selected:not(.ant-select-item-option-disabled) {
+//      font-weight: 600;
+//      color: ${(props) => props.theme.general.textColor}; 
+//      background-color: ${(props) => props.theme.general.greySelection};
+//    }
   
-   .ant-select-item-option-active:not(.ant-select-item-option-disabled) {
-     background-color: ${(props) => props.theme.general.greySelectionHover};
-   }
-// empty box select
-  .ant-select-dropdown-empty {
-     background: ${(props) => props.theme.general.grey1} !important;
-  }
-  .ant-select-item-empty .ant-empty-small {
-    // also possibel but not nessesarry because of .ant-select-dropdown-empty
-     color: ${(props) => props.theme.general.textColor} !important; 
-  }
-  .ant-select-item-empty .ant-empty-small .ant-empty-image svg {
-    filter: brightness(0) invert(0.8); // white ish filter
-  }
+//    .ant-select-item-option-active:not(.ant-select-item-option-disabled) {
+//      background-color: ${(props) => props.theme.general.greySelectionHover};
+//    }
+// // empty box select
+//   .ant-select-dropdown-empty {
+//      background: ${(props) => props.theme.general.grey1} !important;
+//   }
+//   .ant-select-item-empty .ant-empty-small {
+//     // also possibel but not nessesarry because of .ant-select-dropdown-empty
+//      color: ${(props) => props.theme.general.textColor} !important; 
+//   }
+//   .ant-select-item-empty .ant-empty-small .ant-empty-image svg {
+//     filter: brightness(0) invert(0.8); // white ish filter
+//   }
 
 `;
 
@@ -97,7 +97,6 @@ export const StyledContent = styled.div<{ theme: ThemeInterface }>`
   justify-content: flex-start;
   align-items: center;
   height: 100vh;
-  overflow-y: scroll;
   width: 75rem;
   max-width: 75rem;
   gap: 24px;
@@ -134,19 +133,20 @@ export const StyledTabs = styled(Tabs)<{ theme: ThemeInterface }>`
 
 export const StyledSelect = styled(Select)<{ theme: ThemeInterface }>`
   width: 100%;
-  color: ${(props) => props.theme.general.textColor};
-  background-color: transparent;
-  .ant-select-selector {
-    border: ${(props) => "1px solid " + props.theme.general.grey1} !important;
-    background-color: transparent !important;
-  }
-  .ant-select-arrow {
-    font-size: 11px !important;
-    color: ${(props) => props.theme.general.grey1};
-  }
-  // search
-  .ant-select-selection-search-input {
-  }
+  // color: ${(props) => props.theme.general.textColor};
+  // background-color: transparent;
+  // .ant-select-selector {
+  //   border: ${(props) =>
+    "1px solid " + props.theme.general.grey1} !important;
+  //   background-color: transparent !important;
+  // }
+  // .ant-select-arrow {
+  //   font-size: 11px !important;
+  //   color: ${(props) => props.theme.general.grey1};
+  // }
+  // // search
+  // .ant-select-selection-search-input {
+  // }
 `;
 
 export const StyledListPanel = styled.div<{ theme: ThemeInterface }>`
@@ -167,7 +167,6 @@ export const StyledList = styled.div<{ theme: ThemeInterface }>`
   justify-content: center;
   align-items: center;
   width: 100%;
-  overflow-y: scroll;
   background: ${(props) => props.theme.list.listBg};
 `;
 
