@@ -83,12 +83,30 @@ function App() {
   const [filteredFromAirport, setFilteredFromAirport] = useState([]);
   const [filteredFromToAirport, setFilteredFromToAirport] = useState([]);
   const [tab, setTab] = useState("1");
+  const [statusCodes, setStatusCodes] = useState({});
+  const [airlines, setAirlines] = useState({});
 
   useEffect(() => {
     ApiContainer.setServer("https://flydata.avinor.no");
     // ApiContainer.setServer(
     //   "https://agile-wave-55549.herokuapp.com/" + "flydata.avinor.no"
     // );
+    ApiContainer.StatusApi.pollStatusCodes({
+      callback: (statusCodes) => {
+        console.log("StatusCodes", statusCodes);
+        setStatusCodes(statusCodes);
+      },
+      waitTime: REFERENCE_POLL_INTERVAL,
+      onUpdate: (loading: boolean) => console.log("getStatuscodeee"),
+    });
+    ApiContainer.AirlinesApi.pollAirlines({
+      callback: (airlines) => {
+        console.log("airlines", airlines);
+        setAirlines(airlines);
+      },
+      waitTime: REFERENCE_POLL_INTERVAL,
+      onUpdate: (loading: boolean) => console.log("getStatuscodeee"),
+    });
     console.log("mounttt");
   }, []);
 

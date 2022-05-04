@@ -297,7 +297,7 @@ export class FlightApi extends BaseEndpoint {
     timeTo = 24,
     direction = null,
     lastUpdate = null,
-  }: getAirportDataProps) {
+  }: getAirportDataProps): Promise<AirportDataResponse> {
     let queryString = `TimeFrom=${timeFrom}&TimeTo=${timeTo}&airport=${airport}`;
 
     if (direction) queryString += `&direction=${direction}`;
