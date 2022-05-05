@@ -19,7 +19,6 @@ import {
 
 interface FilteredListSeperatedProps {
   selectedAirport: string;
-  flight_ids: string[];
   tab: "arrivals" | "departures";
   onTabChange: (name: "arrivals" | "departures") => void;
   flightData: {
@@ -183,7 +182,7 @@ export const ListItemArrival = ({ flightInfo, index }: ListItemInterface) => {
         <StyledTableValue width={60}>{flight_id}</StyledTableValue>
         <StyledTableValue width={100}>{airline}</StyledTableValue>
         <StyledTableValue width={180}>
-          {arrivalTimeFormatted} (departed {departureTimeFormatted})
+          {arrivalTimeFormatted} (departure {departureTimeFormatted})
         </StyledTableValue>
         <Tooltip title={from_airport_full}>
           <StyledTableValue width={200}>{from_city}</StyledTableValue>
@@ -211,7 +210,7 @@ export const ListItemDeparture = ({ flightInfo, index }: ListItemInterface) => {
         <StyledTableValue width={60}>{flight_id}</StyledTableValue>
         <StyledTableValue width={100}>{airline}</StyledTableValue>
         <StyledTableValue width={180}>
-          {departureTimeFormatted} (arrives {arrivalTimeFormatted})
+          {departureTimeFormatted} (arrival {arrivalTimeFormatted})
         </StyledTableValue>
         <Tooltip title={to_airport_full}>
           <StyledTableValue width={200}>{to_city}</StyledTableValue>

@@ -8,7 +8,6 @@ import X2JS from "x2js";
 
 interface pollStatusCodesProps {
   callback: void;
-  onUpdate: (arg0: boolean) => void;
   waitTime: number;
 }
 
@@ -32,20 +31,14 @@ export class StatusApi extends BaseEndpoint {
     super(_serverAddress);
   }
 
-  async pollStatusCodes({
-    callback,
-    onUpdate,
-    waitTime,
-  }: pollStatusCodesProps) {
+  async pollStatusCodes({ callback, waitTime }: pollStatusCodesProps) {
     const pollFunc = async () => {
-      onUpdate(true);
       const res = await this.getStatusCodes();
       const statusLookup: { [key: string]: string } = {};
       const { flightStatus } = res.flightStatuses;
       for (let s of flightStatus) {
         statusLookup[s._code] = s._statusTextEn;
       }
-      onUpdate(false);
       return statusLookup;
     };
 

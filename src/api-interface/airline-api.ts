@@ -8,7 +8,6 @@ import X2JS from "x2js";
 
 interface pollAirportsProps {
   callback: void;
-  onUpdate: (arg0: boolean) => void;
   waitTime: number;
 }
 
@@ -31,16 +30,14 @@ export class AirlinesApi extends BaseEndpoint {
     super(_serverAddress);
   }
 
-  async pollAirlines({ callback, onUpdate, waitTime }: pollAirportsProps) {
+  async pollAirlines({ callback, waitTime }: pollAirportsProps) {
     const pollFunc = async () => {
-      onUpdate(true);
       const res = await this.getAirlines();
       const airlineLookup: { [key: string]: string } = {};
       const { airlineName } = res.airlineNames;
       for (let s of airlineName) {
         airlineLookup[s._code] = s._name;
       }
-      onUpdate(false);
       return airlineLookup;
     };
 

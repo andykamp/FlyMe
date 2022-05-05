@@ -27,8 +27,8 @@ import { FilteredListSeperated } from "./List";
 // airport data every 3 minutes, and more static resources (airlines, airports,
 // status code) only every 24 hours
 
-const ACTIVE_POLL_INTERVAL = 10 * 1000; // 3 minutes as suggested in doc
-const REFERENCE_POLL_INTERVAL = 24 * 3600 * 1000; // 24 hours as suggested in doc
+const DYNAMIC_POLL_INTERVAL = 3 * 60 * 1000; // 3 minutes as suggested in doc
+const STATIC_POLL_INTERVAL = 24 * 3600 * 1000; // 24 hours as suggested in doc
 
 //
 
@@ -46,21 +46,17 @@ function App() {
     // poll status codes
     ApiContainer.StatusApi.pollStatusCodes({
       callback: (statusCodes) => {
-        console.log("StatusCodes", statusCodes);
         setStatusCodes(statusCodes);
       },
-      waitTime: REFERENCE_POLL_INTERVAL,
-      onUpdate: (loading: boolean) => console.log("getStatuscodeee"),
+      waitTime: STATIC_POLL_INTERVAL,
     });
 
     // poll airlines
     ApiContainer.AirlinesApi.pollAirlines({
       callback: (airlines) => {
-        console.log("airlines", airlines);
         setAirlines(airlines);
       },
-      waitTime: REFERENCE_POLL_INTERVAL,
-      onUpdate: (loading: boolean) => console.log("getStatuscodeee"),
+      waitTime: STATIC_POLL_INTERVAL,
     });
 
     // cleanup at unmount
@@ -78,10 +74,9 @@ function App() {
     ApiContainer.FlightApi.pollAirportData({
       airport,
       callback: (res) => {
-        console.log("res", res);
         setFlightData(res);
       },
-      waitTime: ACTIVE_POLL_INTERVAL,
+      waitTime: DYNAMIC_POLL_INTERVAL,
       onUpdate: (loading: boolean) => setLoading(loading),
     });
   };
@@ -107,7 +102,7 @@ function App() {
                 <StyledTitle>FlyMe</StyledTitle>
               </StyledLogoContainer>
               <Row style={{ gap: 8 }}>
-                <div onClick={toggleTheme}>toggle theme</div>
+                {/*<div onClick={toggleTheme}>toggle theme</div>*/}
                 <div>
                   {loading ? (
                     <Tooltip title=" Syncing requested data with Avinor. FlyMe fetches data every 3 minutes. ">
@@ -180,18 +175,21 @@ function App() {
               </StyledIntroContainer>
             </StyledPanel>
 
-            {false && selectedAirport && !loading && (
+            {loading && (
               <StyledIntroContainer style={{ padding: "0 24px" }}>
                 <StyledIntroItem>
-                  <StyledTitle>Arrivals</StyledTitle>
-                </StyledIntroItem>
-                <StyledIntroItem>
-                  <StyledTitle>Departures</StyledTitle>
+                  <Tag
+                    style={{ background: "rgba(0,0,0,0.2)" }}
+                    icon={<SyncOutlined spin />}
+                    color="processing"
+                  >
+                    Loading data ...
+                  </Tag>
                 </StyledIntroItem>
               </StyledIntroContainer>
             )}
 
-            {selectedAirport && flightData && (
+            {!loading && selectedAirport && flightData && (
               <FilteredListSeperated
                 selectedAirport={selectedAirport}
                 onTabChange={setTab}
