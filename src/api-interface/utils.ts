@@ -18,17 +18,12 @@ export function callEndpoint({
     var xhr = new XMLHttpRequest();
     xhr.onload = function () {};
     xhr.onreadystatechange = function () {
-      console.log("xhr.status", xhr.status);
-      if (xhr.readyState == 4 && xhr.status == 304) {
-        alert("Cached");
-      }
       // In local files, status is 0 upon success in Mozilla Firefox
       if (xhr.readyState === XMLHttpRequest.DONE) {
         var status = xhr.status;
         if (status === 0 || (status >= 200 && status < 400)) {
           resolve(decode(xhr));
         } else {
-          console.log(status);
           console.log(xhr.response);
           reject();
         }

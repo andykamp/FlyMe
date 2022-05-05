@@ -33,8 +33,8 @@ export interface FlightInterface {
 }
 
 export interface FlightStatusInterface {
-  code: string;
-  time: string;
+  _code: string;
+  _time: string;
 }
 
 interface AirportDataResponse {
@@ -56,6 +56,29 @@ interface pollFullDataProps {
 interface pollAiportDataProps extends pollFullDataProps {
   airport: string;
 }
+
+interface EnrichedInfo {
+  flight_id: string;
+  departureTime: string;
+  arrivalTime: string;
+  departureTimeFormatted: string;
+  arrivalTimeFormatted: string;
+  duration: string;
+  departureStatus: string;
+  arrivalStatus: string;
+  to_airport: string;
+  to_airport_full: string;
+  to_city: string;
+  from_airport: string;
+  from_airport_full: string;
+  from_city: string;
+  dom_int: string;
+  airline: string;
+  via_airport?: string;
+  status: string;
+  gate?: string;
+}
+
 // ---------------------------------------------
 // Flight api class
 // ---------------------------------------------
@@ -88,67 +111,74 @@ export class FlightApi extends BaseEndpoint {
     return Boolean(this.airportCodeToName[targetA.toLowerCase()]);
   };
 
-  _getFlightInfo = (flight_id: string) => {
-    let departureInfoMissing = false,
-      arrivalInfoMissing = false;
-    let departureInfo = this.departures[flight_id];
-    let arrivalInfo = this.arrivals[flight_id];
-    if (!departureInfo) {
-      departureInfo = {};
-      departureInfoMissing = true;
-    }
+  _getFlightInfo = (flight_id: string): EnrichedInfo => {
+    let departureInfo = this.departures[flight_id] || {};
+    let arrivalInfo = this.arrivals[flight_id] || {};
 
-    if (!arrivalInfo) {
-      arrivalInfo = {};
-      arrivalInfoMissing = true;
-    }
+    // in case of the flight did not connect
+    const readFrom = this.departures[flight_id] ? arrivalInfo : departureInfo;
 
-    if (departureInfoMissing && arrivalInfoMissing) {
-      console.error("missing flight", flight_id);
-      return {};
-    }
-    const readFrom = departureInfoMissing ? arrivalInfo : departureInfo;
-
-    const dom_int_lookup = {
-      D: "Domestic",
-      I: "International",
-      S: "Shengen",
+    const getFlightType = (dom_int: string): string => {
+      switch (dom_int) {
+        case "S":
+          return "Shengen";
+        case "D":
+          return "Domestic";
+        case "I":
+          return "International";
+        default:
+          return "unknown";
+      }
     };
 
-    // const diffHours = diff_hours(fromDate, toDate) + "h";
-    // const date = new Date(to.schedule_time);
-    // const dateFormatted = to.schedule_time
-    //   ? `${date.getHours()}:${date.getMinutes()}`
-    //   : "-";
+    const aDate = new Date(arrivalInfo.schedule_time);
+    const dDate = new Date(departureInfo.schedule_time);
+    const aDateFormatted = `${String(aDate.getHours()).padStart(
+      2,
+      "0"
+    )}:${String(aDate.getMinutes()).padStart(2, "0")}`;
+    const dDateFormatted = `${String(dDate.getHours()).padStart(
+      2,
+      "0"
+    )}:${String(dDate.getMinutes()).padStart(2, "0")}`;
+
+    const duration = diff_hours(dDate, aDate) + "h";
+
+    const getFullName = (airport: string): string => {
+      if (!airport) return "unknown";
+      return this.airportCodeToName[airport.toLowerCase()] || "unknown";
+    };
+
+    const getStatus = (status: { _code: string; _time: string }) => {
+      if (!status || !status._code) return "";
+      return status._code;
+    };
+
+    const getAirline = (airline) => {
+      return "TODO";
+    };
+
     const info = {
       flight_id: flight_id,
       departureTime: departureInfo.schedule_time,
       arrivalTime: arrivalInfo.schedule_time,
-      departureTimeFormatted: departureInfo.schedule_time,
-      arrivalTimeFormatted: arrivalInfo.schedule_time,
-      duration: "--",
-      departureStatus: departureInfo.status,
-      arrivalStatus: arrivalInfo.status,
+      departureTimeFormatted: dDateFormatted,
+      arrivalTimeFormatted: aDateFormatted,
+      duration,
       to_airport: departureInfo.airport,
-      to_airport_full: this.airportCodeToName[
-        departureInfo.airport.toLowerCase()
-      ],
-      to_city: this.airportCodeToName[
-        departureInfo.airport.toLowerCase()
-      ].split(" ")[0],
+      to_airport_full: getFullName(departureInfo.airport),
+      to_city: getFullName(departureInfo.airport).split(" ")[0],
       from_airport: arrivalInfo.airport,
-      from_airport_full: this.airportCodeToName[
-        arrivalInfo.airport.toLowerCase()
-      ],
-      form_city: this.airportCodeToName[
-        arrivalInfo.airport.toLowerCase()
-      ].split(" ")[0],
-      dom_int: dom_int_lookup[readFrom.dom_int] || "_",
-      airline: "TODO", // airline_lookup[readFrom.airline]
-      via_airport: "TODO",
-      status: "TODOOOO",
+      from_airport_full: getFullName(arrivalInfo.airport),
+      from_city: getFullName(arrivalInfo.airport).split(" ")[0],
+      dom_int: getFlightType(readFrom.dom_int),
+      airline: getAirline(readFrom.airline),
+      status: getStatus(readFrom.status),
+      departureStatus: getStatus(departureInfo.status),
+      arrivalStatus: getStatus(arrivalInfo.status),
+      gate: readFrom.gate,
+      via_airport: readFrom.via_airport,
     };
-    console.log("infooo", info);
     return info;
   };
 
@@ -325,6 +355,7 @@ export class FlightApi extends BaseEndpoint {
       }
     }
 
+    console.log("arrived", this.arrivals);
     const t2_parse = performance.now();
     console.log(
       `getAirportDataFull parsing took ${t2_parse - t1_parse} ms (${

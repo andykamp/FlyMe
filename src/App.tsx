@@ -5,7 +5,7 @@ import { getFromToAirport } from "./api-interface/utils";
 import { airportsInNorway } from "./data";
 import { ThemeProvider } from "styled-components";
 import { ThemeContext, getTheme } from "./theme";
-import { Tabs, Select, Tooltip, Tag } from "antd";
+import { Select, Tooltip, Tag } from "antd";
 import { CheckCircleOutlined, SyncOutlined } from "@ant-design/icons";
 import {
   GlobalStyle,
@@ -15,17 +15,15 @@ import {
   StyledHeaderContent,
   StyledContent,
   StyledPanel,
-  StyledTabs,
   StyledTitle,
   StyledSelect,
   StyledParagraph,
-  StyledLink,
   Row,
-  Col,
+  StyledIntroItem,
+  StyledIntroContainer,
 } from "./styled-components";
 import { FilteredListSeperated } from "./List";
 
-const { TabPane } = Tabs;
 const { Option } = Select;
 
 // https://avinor.no/konsern/tjenester/flydata/flydata-i-xml-format recommend polling
@@ -37,47 +35,18 @@ const REFERENCE_POLL_INTERVAL = 24 * 3600 * 1000; // 24 hours as suggested in do
 
 //
 
-//const getData = async () => {
-//  setLoading(true);
-//  setFullData(null);
-//  const airports = await ApiContainer.FlightApi.getAirports();
-//  const airlines = await ApiContainer.FlightApi.getAirlines();
-//  const statusConfig = await ApiContainer.FlightApi.getStatusConfig();
-//  // const query = await ApiContainer.FlightApi.query({
-//  //   query: "TimeFrom=1&TimeTo=24&airport=OSL&lastUpdate=2022-04-20T15:00:00Z",
-//  // });
-//  const fullData = await ApiContainer.FlightApi.getAirportDataFull({
-//    airport: "OSL",
-//    timeFrom: 0,
-//    timeTo: 24,
-//  });
-//  console.log("airports", airports);
-//  console.log("airlines", airlines);
-//  console.log("statusConfig", statusConfig);
-//  console.log("fullData", fullData);
-//  setAirports(airports);
-//  setAirlines(airlines);
-//  setStatusConfig(statusConfig);
-//  setFullData(fullData);
-//  //
-//  setLoading(false);
-//};
-
 function App() {
   const [selectedTheme, setSelectedTheme] = useState(getTheme("dark"));
   const [loading, setLoading] = useState(false);
   const [selectedAirport, setSelectedAirport] = useState<null | string>(null);
   const [dataLastUpdated, setDataLastUpdated] = useState(0);
   const [filteredFromAirport, setFilteredFromAirport] = useState([]);
-  const [tab, setTab] = useState("1");
   const [statusCodes, setStatusCodes] = useState({});
   const [airlines, setAirlines] = useState({});
+  const [tab, setTab] = useState<"arrivals" | "departures">("arrivals");
 
   useEffect(() => {
-    ApiContainer.setServer("https://flydata.avinor.no");
-    // ApiContainer.setServer(
-    //   "https://agile-wave-55549.herokuapp.com/" + "flydata.avinor.no"
-    // );
+    // poll data straight away
     ApiContainer.StatusApi.pollStatusCodes({
       callback: (statusCodes) => {
         console.log("StatusCodes", statusCodes);
@@ -94,7 +63,16 @@ function App() {
       waitTime: REFERENCE_POLL_INTERVAL,
       onUpdate: (loading: boolean) => console.log("getStatuscodeee"),
     });
+
     console.log("mounttt");
+
+    // cleanup
+    return () => {
+      console.log("cleanupppppp");
+      ApiContainer.FlightApi.stopPolling();
+      ApiContainer.StatusApi.stopPolling();
+      ApiContainer.AirlinesApi.stopPolling();
+    };
   }, []);
 
   useEffect(() => {
@@ -111,7 +89,6 @@ function App() {
 
   const airportChanged = (airport: string) => {
     setSelectedAirport(airport);
-    setFilteredFromAirport([]);
     // we start a new poll every time the airport changes
     // ApiContainer.FlightApi.pollFullData({
     //   callback: () => {
@@ -122,8 +99,7 @@ function App() {
     // });
     ApiContainer.FlightApi.pollAirportData({
       airport,
-      callback: (res) => {
-        console.log("Res", res);
+      callback: () => {
         setDataLastUpdated(Date.now());
       },
       waitTime: ACTIVE_POLL_INTERVAL,
@@ -181,64 +157,65 @@ function App() {
           </StyledHeader>
           <StyledContent>
             <StyledPanel>
-              <StyledTitle>Some info about the site</StyledTitle>
-              <StyledParagraph>
-                Build Plugins add extra functionality to your site build.
-                Plugins are created by developers at Netlify and in the
-                community. All plugin support is provided by plugin authors.
-              </StyledParagraph>
-              <StyledLink
-                onClick={() => window.open("www.avinor.no", "_blank")}
-              >
-                Flight data from avinor
-              </StyledLink>
+              <StyledIntroContainer>
+                <StyledIntroItem>
+                  <StyledTitle>
+                    Select airport to see arrivals/departures
+                  </StyledTitle>
+                  <StyledParagraph>
+                    FlyMe displays arrival/departure times using Avinor's open
+                    API.
+                    <br />
+                    Read more about Avinor&nbsp;
+                    <a href="https://www.avinor.no" target="_blank">
+                      here
+                    </a>
+                    .
+                  </StyledParagraph>
+                  <StyledSelect
+                    style={{ width: 300, marginTop: 8 }}
+                    onChange={airportChanged}
+                    value={selectedAirport}
+                    showSearch
+                    placeholder="Search for airport"
+                    optionFilterProp="children"
+                    filterOption={(input, option) =>
+                      option.children
+                        .toLowerCase()
+                        .indexOf(input.toLowerCase()) >= 0
+                    }
+                    filterSort={(optionA, optionB) =>
+                      optionA.children
+                        .toLowerCase()
+                        .localeCompare(optionB.children.toLowerCase())
+                    }
+                  >
+                    {airportsInNorway.map((a) => (
+                      <Option
+                        key={a.code}
+                        value={a.code}
+                      >{`(${a.code.toUpperCase()}) ${a.name}`}</Option>
+                    ))}
+                  </StyledSelect>
+                </StyledIntroItem>
+              </StyledIntroContainer>
             </StyledPanel>
-            <StyledPanel>
-              <Col>
-                <StyledTabs
-                  defaultActiveKey={tab}
-                  onChange={(val) => setTab(val)}
-                >
-                  <TabPane tab="Arrivals/Departures" key="1">
-                    <Row>
-                      <Col>
-                        <StyledTitle>From:</StyledTitle>
-                        <StyledSelect
-                          style={{ width: 300 }}
-                          onChange={airportChanged}
-                          value={selectedAirport}
-                          showSearch
-                          placeholder="Search for airport"
-                          optionFilterProp="children"
-                          filterOption={(input, option) =>
-                            option.children
-                              .toLowerCase()
-                              .indexOf(input.toLowerCase()) >= 0
-                          }
-                          filterSort={(optionA, optionB) =>
-                            optionA.children
-                              .toLowerCase()
-                              .localeCompare(optionB.children.toLowerCase())
-                          }
-                        >
-                          {airportsInNorway.map((a) => (
-                            <Option
-                              key={a.code}
-                              value={a.code}
-                            >{`(${a.code.toUpperCase()}) ${a.name}`}</Option>
-                          ))}
-                        </StyledSelect>
-                      </Col>
-                    </Row>
-                  </TabPane>
-                </StyledTabs>
-              </Col>
-            </StyledPanel>
-            {loading && <div>loading....</div>}
-            {selectedAirport && filteredFromAirport && tab == "1" && (
+            {false && selectedAirport && !loading && (
+              <StyledIntroContainer style={{ padding: "0 24px" }}>
+                <StyledIntroItem>
+                  <StyledTitle>Arrivals</StyledTitle>
+                </StyledIntroItem>
+                <StyledIntroItem>
+                  <StyledTitle>Departures</StyledTitle>
+                </StyledIntroItem>
+              </StyledIntroContainer>
+            )}
+            {selectedAirport && filteredFromAirport && (
               <FilteredListSeperated
                 selectedAirport={selectedAirport}
                 flight_ids={filteredFromAirport}
+                onTabChange={setTab}
+                tab={tab}
               />
             )}
           </StyledContent>

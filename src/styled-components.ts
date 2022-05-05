@@ -1,5 +1,5 @@
 import styled, { createGlobalStyle } from "styled-components";
-import { Tabs, Select } from "antd";
+import { Select } from "antd";
 import { ThemeInterface } from "./theme";
 
 export const GlobalStyle = createGlobalStyle<{ theme: ThemeInterface }>`
@@ -102,8 +102,24 @@ export const StyledContent = styled.div<{ theme: ThemeInterface }>`
   gap: 24px;
 `;
 
-export const StyledPanel = styled.div<{ theme: ThemeInterface }>`
+export const StyledIntroContainer = styled.div<{ theme: ThemeInterface }>`
+  display: flex;
+  flex-direction: row;
+  justify-content: center;
+  align-items: center;
+  gap: 24px;
+  width: 100%;
+`;
 
+export const StyledIntroItem = styled.div<{ theme: ThemeInterface }>`
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: flex-start;
+  width: 100%;
+`;
+
+export const StyledPanel = styled.div<{ theme: ThemeInterface }>`
   display: flex;
   flex-direction: column;
   justify-content: flex-start;
@@ -114,21 +130,34 @@ export const StyledPanel = styled.div<{ theme: ThemeInterface }>`
   background: ${(props) => props.theme.general.panelBg};
   border: 1px solid #1c2126;
   border-radius: 8px;
-}
-
-
 `;
 
-export const StyledTabs = styled(Tabs)<{ theme: ThemeInterface }>`
-  color: ${(props) => props.theme.general.textColor};
-  font-size: ${(props) => props.theme.general.fontSizeTitle};
-  font-weight: bold;
-  > .ant-tabs-nav::before,
-  .ant-tabs-bottom > .ant-tabs-nav::before,
-  .ant-tabs-top > div > .ant-tabs-nav::before,
-  .ant-tabs-bottom > div > .ant-tabs-nav::before {
-    border-bottom: 1px solid ${(props) => props.theme.general.textColor};
-  }
+export const StyledTabs = styled.div<{ theme: ThemeInterface }>`
+  display: flex;
+  flex-direction: row;
+  justify-content: center;
+  align-items: center;
+  width: 100%;
+  height: 80px;
+`;
+export const StyledTab = styled.div<{
+  theme: ThemeInterface;
+  active?: boolean;
+}>`
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: flex-start;
+  width: 100%;
+  height: 100%;
+  cursor: pointer;
+  padding: 24px;
+  color: ${(props) => props.theme.general.titleColor};
+  background: ${(props) =>
+    props.active ? props.theme.general.panelBg : "transparent"};
+  border: 1px solid #1c2126;
+  border-top-left-radius: 8px;
+  border-top-right-radius: 8px;
 `;
 
 export const StyledSelect = styled(Select)<{ theme: ThemeInterface }>`
@@ -158,7 +187,8 @@ export const StyledListPanel = styled.div<{ theme: ThemeInterface }>`
   color: ${(props) => props.theme.general.titleColor};
   background: ${(props) => props.theme.general.panelBg};
   border: 1px solid #1c2126;
-  border-radius: 8px;
+  border-bottom-left-radius: 8px;
+  border-bottom-right-radius: 8px;
 `;
 
 export const StyledList = styled.div<{ theme: ThemeInterface }>`
@@ -172,17 +202,24 @@ export const StyledList = styled.div<{ theme: ThemeInterface }>`
 
 export const StyledListItem = styled.div<{
   theme: ThemeInterface;
-  altNum: number;
+  altNum?: boolean;
+  header?: boolean;
 }>`
   display: flex;
-  flex-direction: row;
+  flex-direction: row
   justify-content: space-between;
   align-items: center;
   width: 100%;
-  height: 80px;
+  height: 60px;
   padding: 0 24px;
-  background: ${(props) =>
+  backgound: ${(props) =>
     props.altNum ? props.theme.list.listItemAltBg : props.theme.list.listBg};
+  ${({ header, theme }) =>
+    header &&
+    `
+      //border-bottom: 4px solid ${theme.accent.green};
+      border-bottom: 1px solid #1c2126;
+  `}
 `;
 
 export const StyledTitle = styled.div<{ theme: ThemeInterface }>`
@@ -220,6 +257,23 @@ export const StyledIconContainer = styled.div<{ theme: ThemeInterface }>`
   align-items: center;
   width: 24px;
   height: 100%;
+`;
+
+export const StyledTableValue = styled.div<{
+  theme: ThemeInterface;
+  width?: number;
+  header?: boolean;
+}>`
+  color: ${(props) => props.theme.general.textColor};
+  width: ${(props) => (props.width ? props.width + "px" : "100%")};
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+  ${({ header, theme }) =>
+    header &&
+    `
+    font-weight:bold;
+  `}
 `;
 
 export const Row = styled.div`
