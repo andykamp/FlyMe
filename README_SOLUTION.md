@@ -1,14 +1,14 @@
 # Approach and solution 
 
 ## Possible approaches: 
-- Server side rendering. Requests are polled and cached every 3min and 24 hours and cached on the server. Then delivered to clients with no 'compute' latency on the server. Basically a shared cache. Less work for avinors server.
-- Set up own server that polls and cach the data in e.g redis locally. Then clients query this server instead. Same concept as SSR but does not require a SSR framework atleast. 
-- Client side queries on relevant aiports only. Longer time per fetch if on switch, but can be alliviated with with private caching, seeing alot of the same airports will be queried each time. Can also use last_update to reduce payload each time.  
-- Client side fetch-all-data-every-3-minutes. Longer initial wait time, more memory that is unused, more queries to server, but once loaded it can give a super fast user experience after initial load. 
+- **Server side rendering**. Requests are polled and cached every 3min and 24 hours and cached on the server. Then delivered to clients with no 'compute' latency on the server. Basically a shared cache. Less work for avinors server.
+- **Set up own server that polls and cach the data in e.g redis locally**. Then clients query this server instead. Same concept as SSR but does not require a SSR framework atleast. 
+- **Client side queries on relevant aiports only.** Longer time per fetch if on switch, but can be alliviated with with private caching, seeing alot of the same airports will be queried each time. Can also use last_update to reduce payload each time.  
+- **Client side fetch-all-data-every-3-minutes.** Longer initial wait time, more memory that is unused, more queries to server, but once loaded it can give a super fast user experience after initial load. 
 
 ## Choosen approach 
-- Client side queries on relevant aiports only
-    - Might not be ideal, but fastest to implement and no server involved
+**Client side queries on relevant aiports only**
+  - Might not be ideal, but fastest to implement and no server involved
 
 ## How to use
 Clone repo and run ```yarn && yarn vite ```
@@ -17,7 +17,7 @@ In addition, the application is deployed to two urls:
 - with a external proxy cerver for CORS: [avinor-api-corsproxy.surge.sh](https://avinor-api-corsproxy.surge.sh/).
 - without any proxy stuff. You need to use a chrome extention or something: [avinor-api-nocorsproxy.surge.sh](https://avinor-api-nocorsproxy.surge.sh/).
 
-![plot](./logo.svg)
+![image](./snapshot.png)
 
 
 ### Interesting questions to answer
@@ -35,7 +35,7 @@ In addition, the application is deployed to two urls:
 - some flights might not match
 
 
-### Notes about the implementation:
+### TODOs and notes about the implementation:
 - to inconsisten with typescript () and ({}) inputs.
 - takes some shortcuts with type 'any' when it gets complicated. Also still some typescript errors lying around. Not good.
 - incosistent with type/interface naming
@@ -44,3 +44,4 @@ In addition, the application is deployed to two urls:
 - error handling for CORS not ideal
 - visulize unmatched flights not ideal
 - responsiveness not ideal. Only works on a certain range of screen sizes (not on mobile)
+- not added proper private caching
