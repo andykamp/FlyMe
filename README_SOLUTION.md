@@ -30,9 +30,10 @@ In addition, the application is deployed to two urls:
 
 
 
-### Some possible edge cases:
+### Some of the edge cases to handle:
 - the API returns different formats based on if a airport has 0, 1, or  2+ flights
 - some flights might not match
+- CORS
 
 
 ### TODOs and notes about the implementation:
@@ -45,3 +46,4 @@ In addition, the application is deployed to two urls:
 - visulize unmatched flights not ideal
 - responsiveness not ideal. Only works on a certain range of screen sizes (not on mobile)
 - not added proper private caching
+- pushed directly to master. But only member so not the worst thing that can happen
