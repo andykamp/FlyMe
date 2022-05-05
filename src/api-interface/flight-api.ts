@@ -4,7 +4,6 @@ import X2JS from "x2js";
 import { airportsInNorway } from "../data";
 import { diff_hours, formatTo2Digits } from "./utils";
 import { statusCodeInterface } from "./status-api";
-import { airlineInterface } from "./airline-api";
 
 // ---------------------------------------------
 // Types and interfaces
@@ -221,8 +220,6 @@ export class FlightApi extends BaseEndpoint {
     const arrivals: { [key: string]: FlightInterface } = {};
     const allFlightIds: Set<string> = new Set();
 
-    const t1_tot = performance.now();
-
     // get the selected airport first
     const airportData = await this.getAirportData({
       airport: airport.toUpperCase(),
@@ -262,17 +259,9 @@ export class FlightApi extends BaseEndpoint {
     }
 
     // await all promises
-    const t1_fetch = performance.now();
     const allData = await Promise.all(promises);
-    const t2_fetch = performance.now();
-    console.log(
-      `getAirportDataFull fetching took ${t2_fetch - t1_fetch} ms (${
-        (t2_fetch - t1_fetch) / 100
-      })s`
-    );
 
     // parse result for all promises
-    const t1_parse = performance.now();
     for (let data of allData) {
       let flights = data.airport.flights.flight;
       if (!flights) continue;
@@ -289,20 +278,6 @@ export class FlightApi extends BaseEndpoint {
         allFlightIds.add(f.flight_id);
       }
     }
-
-    const t2_parse = performance.now();
-    console.log(
-      `getAirportDataFull parsing took ${t2_parse - t1_parse} ms (${
-        (t2_parse - t1_parse) / 100
-      })s`
-    );
-
-    const t2_tot = performance.now();
-    console.log(
-      `getAirportDataFull total took ${t2_tot - t1_tot} ms (${
-        (t2_tot - t1_tot) / 100
-      })s`
-    );
 
     return {
       arrivals,

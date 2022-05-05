@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import FlyMeLogo from "./FlyMeLogo.svg";
+import Logo from "./logo.svg";
 import { ApiContainer } from "./api-interface";
 import { airportsInNorway } from "./data";
 import { ThemeProvider } from "styled-components";
@@ -98,14 +98,14 @@ function App() {
           <StyledHeader>
             <StyledHeaderContent>
               <StyledLogoContainer>
-                <img src={FlyMeLogo} alt="logo" />
-                <StyledTitle>FlyMe</StyledTitle>
+                <img src={Logo} alt="logo" />
+                <StyledTitle>API Avinor</StyledTitle>
               </StyledLogoContainer>
               <Row style={{ gap: 8 }}>
                 {/*<div onClick={toggleTheme}>toggle theme</div>*/}
                 <div>
                   {loading ? (
-                    <Tooltip title=" Syncing requested data with Avinor. FlyMe fetches data every 3 minutes. ">
+                    <Tooltip title=" Syncing requested data with Avinor. This website fetches data every 3 minutes. ">
                       <Tag
                         style={{ background: "rgba(0,0,0,0.2)" }}
                         icon={<SyncOutlined spin />}
@@ -115,7 +115,7 @@ function App() {
                       </Tag>
                     </Tooltip>
                   ) : (
-                    <Tooltip title=" All requested data is currently synced with Avinor. FlyMe fetches data every 3 minutes. ">
+                    <Tooltip title=" All requested data is currently synced with Avinor. This website fetches data every 3 minutes. ">
                       <Tag
                         style={{ background: "rgba(0,0,0,0.2)" }}
                         icon={<CheckCircleOutlined />}
@@ -137,9 +137,6 @@ function App() {
                     Select airport to see arrivals/departures
                   </StyledTitle>
                   <StyledParagraph>
-                    FlyMe displays arrival/departure times using Avinor's open
-                    API.
-                    <br />
                     Read more about Avinor&nbsp;
                     <a href="https://www.avinor.no" target="_blank">
                       here

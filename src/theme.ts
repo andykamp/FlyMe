@@ -60,28 +60,6 @@ export const titleColorLT = "#5E6067";
 export const textColor = "#A4A8AD";
 export const textColorLT = "#5E6067";
 
-export const grey1 = "#4A4B52";
-export const grey1LT = "#DADADA";
-
-export const grey2 = addAlpha(grey1, 0.4);
-export const grey2LT = addAlpha(grey1LT, 0.1);
-
-export const greySelection = addAlpha(grey1, 0.3);
-export const greySelectionLT = addAlpha(grey1LT, 0.1);
-
-export const greySelectionHover = addAlpha(grey1, 0.2);
-export const greySelectionHoverLT = addAlpha(grey1, 0.05);
-
-export const greyDisabled = addAlpha("#B1B1B4", 0.5);
-export const greyDisabledLT = "#B1B1B4";
-
-export const textColorContrast = "#FFFFFF";
-export const textColorContrastLT = "#000000";
-
-// mouse
-export const mouseBG = "#000000";
-export const mouseBorder = "#FFFFFF";
-
 // ---------------------------------------------
 // Actual theme interface and theme
 // ---------------------------------------------
@@ -116,18 +94,10 @@ export interface ThemeInterface {
     fontFamily: string;
     fontSize: string;
     fontSizeTitle: string;
-    appBorderRadius: string;
-    appGapSize: string;
     bg: string;
     panelBg: string;
     titleColor: string;
     textColor: string;
-    grey1: string;
-    grey2: string;
-    greySelection: string;
-    greySelectionHover: string;
-    greyDisabled: string;
-    textColorContrast: string;
   };
 }
 
@@ -161,18 +131,10 @@ export const themeNew = {
     fontFamily,
     fontSize,
     fontSizeTitle,
-    appBorderRadius,
-    appGapSize,
     bg,
     panelBg,
     titleColor,
     textColor,
-    grey1,
-    grey2,
-    greySelection,
-    greySelectionHover,
-    greyDisabled,
-    textColorContrast,
   },
 };
 
@@ -188,19 +150,11 @@ export const themeNewLT = Object.assign({}, themeNew, {
     fontFamily,
     fontSize,
     fontSizeTitle,
-    appBorderRadius,
-    appGapSize,
     bg: bgLT,
     panelBg: panelBgLT,
 
     titleColor: titleColorLT,
     textColor: textColorLT,
-    grey1: grey1LT,
-    grey2: grey2LT,
-    greySelection: greySelectionLT,
-    greySelectionHover: greySelectionHoverLT,
-    greyDisabled: greyDisabledLT,
-    textColorContrast: textColorContrastLT,
   },
 });
 

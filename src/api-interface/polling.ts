@@ -31,7 +31,7 @@ export class pollResource {
 
   stopPolling = () => {
     this.abort = true;
-    clearTimeout(this.timeout);
+    if (this.timeout) clearTimeout(this.timeout);
   };
 
   startPolling = async () => {

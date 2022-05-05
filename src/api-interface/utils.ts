@@ -24,7 +24,7 @@ export function callEndpoint({
         if (status === 0 || (status >= 200 && status < 400)) {
           resolve(decode(xhr));
         } else {
-          console.log(xhr.response);
+          console.error(xhr.response);
           reject();
         }
       }

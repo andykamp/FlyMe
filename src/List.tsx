@@ -85,7 +85,9 @@ export const FilteredListSeperated = ({
           </StyledListPanel>
         )}
         {arrivalsIsEmpty && tab == "arrivals" && (
-          <StyledListPanel>No results on this airport...</StyledListPanel>
+          <StyledListPanel style={{ height: 80, padding: 24 }}>
+            No results on this airport...
+          </StyledListPanel>
         )}
         {!departureslsIsEmpty && tab == "departures" && (
           <StyledListPanel>
@@ -98,7 +100,9 @@ export const FilteredListSeperated = ({
           </StyledListPanel>
         )}
         {departureslsIsEmpty && tab == "departures" && (
-          <StyledListPanel>No results on this airport...</StyledListPanel>
+          <StyledListPanel style={{ height: 80, padding: 24 }}>
+            No results on this airport...
+          </StyledListPanel>
         )}
       </Row>
     </Col>
