@@ -229,12 +229,9 @@ export class FlightApi extends BaseEndpoint {
     const { _name } = airportData.airport;
     let flights = airportData.airport.flights.flight;
     if (!flights) return;
-    // handle edge-case where 1 flight is given as object and not list
     if (!Array.isArray(flights)) flights = [flights];
 
     // stack up all calls  in a promise array
-    // we use a local lookup cache  to not instantiate fetch to the same airport info multiple times
-    // hopefully the airport requests are also cached privatly
     const cache: { [key: string]: boolean } = {};
     const promises = [];
     for (let f of flights) {
@@ -265,11 +262,9 @@ export class FlightApi extends BaseEndpoint {
     for (let data of allData) {
       let flights = data.airport.flights.flight;
       if (!flights) continue;
-      // handle edge-case where 1 flight is given as object and not list
       if (!Array.isArray(flights)) flights = [flights];
       // loop trough flights and cache get airports
       for (let f of flights) {
-        // if (f.dom_int != "D") continue;
         if (f.airport.toLowerCase() != airport) continue;
         // add info about what airport it
         f.source_airport = data.airport._name;
