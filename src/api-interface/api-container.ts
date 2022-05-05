@@ -3,12 +3,14 @@ import { StatusApi } from "./status-api";
 import { AirlinesApi } from "./airline-api";
 
 const SERVER_API = "https://flydata.avinor.no";
-// const SERVER_API = "https://agile-wave-55549.herokuapp.com/" + "flydata.avinor.no"
+//  UNCOMMENT to use CORS proxy const SERVER_API = "https://agile-wave-55549.herokuapp.com/" + "flydata.avinor.no"
+
 class ApiContainer {
   serverAddress: null | string;
   FlightApi: FlightApi;
   AirlinesApi: AirlinesApi;
   StatusApi: StatusApi;
+
   constructor() {
     this.serverAddress = SERVER_API;
     this.FlightApi = new FlightApi(this.serverAddress);

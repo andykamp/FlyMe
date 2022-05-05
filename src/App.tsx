@@ -1,7 +1,6 @@
 import { useState, useEffect } from "react";
 import FlyMeLogo from "./FlyMeLogo.svg";
 import { ApiContainer } from "./api-interface";
-import { getFromToAirport } from "./api-interface/utils";
 import { airportsInNorway } from "./data";
 import { ThemeProvider } from "styled-components";
 import { ThemeContext, getTheme } from "./theme";
@@ -24,13 +23,11 @@ import {
 } from "./styled-components";
 import { FilteredListSeperated } from "./List";
 
-const { Option } = Select;
-
 // https://avinor.no/konsern/tjenester/flydata/flydata-i-xml-format recommend polling
 // airport data every 3 minutes, and more static resources (airlines, airports,
 // status code) only every 24 hours
 
-const ACTIVE_POLL_INTERVAL = 30 * 1000; // 3 minutes as suggested in doc
+const ACTIVE_POLL_INTERVAL = 10 * 1000; // 3 minutes as suggested in doc
 const REFERENCE_POLL_INTERVAL = 24 * 3600 * 1000; // 24 hours as suggested in doc
 
 //
@@ -39,14 +36,14 @@ function App() {
   const [selectedTheme, setSelectedTheme] = useState(getTheme("dark"));
   const [loading, setLoading] = useState(false);
   const [selectedAirport, setSelectedAirport] = useState<null | string>(null);
-  const [dataLastUpdated, setDataLastUpdated] = useState(0);
-  const [filteredFromAirport, setFilteredFromAirport] = useState([]);
   const [statusCodes, setStatusCodes] = useState({});
   const [airlines, setAirlines] = useState({});
+  const [flightData, setFlightData] = useState(null);
   const [tab, setTab] = useState<"arrivals" | "departures">("arrivals");
 
+  // start polling the static resources at mound
   useEffect(() => {
-    // poll data straight away
+    // poll status codes
     ApiContainer.StatusApi.pollStatusCodes({
       callback: (statusCodes) => {
         console.log("StatusCodes", statusCodes);
@@ -55,6 +52,8 @@ function App() {
       waitTime: REFERENCE_POLL_INTERVAL,
       onUpdate: (loading: boolean) => console.log("getStatuscodeee"),
     });
+
+    // poll airlines
     ApiContainer.AirlinesApi.pollAirlines({
       callback: (airlines) => {
         console.log("airlines", airlines);
@@ -64,52 +63,32 @@ function App() {
       onUpdate: (loading: boolean) => console.log("getStatuscodeee"),
     });
 
-    console.log("mounttt");
-
-    // cleanup
+    // cleanup at unmount
     return () => {
-      console.log("cleanupppppp");
       ApiContainer.FlightApi.stopPolling();
       ApiContainer.StatusApi.stopPolling();
       ApiContainer.AirlinesApi.stopPolling();
     };
   }, []);
 
-  useEffect(() => {
-    if (!selectedAirport) return;
-    console.log("data is fetched and polling started");
-    const { departures, arrivals } = ApiContainer.FlightApi;
-    const filterFrom = getFromToAirport({
-      airport: selectedAirport,
-      from: arrivals,
-      to: departures,
-    });
-    setFilteredFromAirport(filterFrom);
-  }, [dataLastUpdated]);
-
+  //  user changed the selected airport  by dropdown
   const airportChanged = (airport: string) => {
     setSelectedAirport(airport);
-    // we start a new poll every time the airport changes
-    // ApiContainer.FlightApi.pollFullData({
-    //   callback: () => {
-    //     setDataLastUpdated(Date.now());
-    //   },
-    //   waitTime: ACTIVE_POLL_INTERVAL,
-    //   onUpdate: (loading: boolean) => setLoading(loading),
-    // });
+
     ApiContainer.FlightApi.pollAirportData({
       airport,
-      callback: () => {
-        setDataLastUpdated(Date.now());
+      callback: (res) => {
+        console.log("res", res);
+        setFlightData(res);
       },
       waitTime: ACTIVE_POLL_INTERVAL,
       onUpdate: (loading: boolean) => setLoading(loading),
     });
   };
 
+  // toggle theme between light/datk
   const toggleTheme = (): void => {
     let newTheme;
-
     if (selectedTheme.base == "dark") newTheme = getTheme("light");
     else newTheme = getTheme("dark");
     setSelectedTheme(newTheme);
@@ -191,15 +170,16 @@ function App() {
                     }
                   >
                     {airportsInNorway.map((a) => (
-                      <Option
+                      <Select.Option
                         key={a.code}
                         value={a.code}
-                      >{`(${a.code.toUpperCase()}) ${a.name}`}</Option>
+                      >{`(${a.code.toUpperCase()}) ${a.name}`}</Select.Option>
                     ))}
                   </StyledSelect>
                 </StyledIntroItem>
               </StyledIntroContainer>
             </StyledPanel>
+
             {false && selectedAirport && !loading && (
               <StyledIntroContainer style={{ padding: "0 24px" }}>
                 <StyledIntroItem>
@@ -210,12 +190,15 @@ function App() {
                 </StyledIntroItem>
               </StyledIntroContainer>
             )}
-            {selectedAirport && filteredFromAirport && (
+
+            {selectedAirport && flightData && (
               <FilteredListSeperated
                 selectedAirport={selectedAirport}
-                flight_ids={filteredFromAirport}
                 onTabChange={setTab}
                 tab={tab}
+                flightData={flightData}
+                statusCodes={statusCodes}
+                airlines={airlines}
               />
             )}
           </StyledContent>

@@ -12,8 +12,18 @@ interface pollAirportsProps {
   waitTime: number;
 }
 
+export interface airlineInterface {
+  _code: string;
+  _name: string;
+}
+interface airlineResponse {
+  airlineNames: {
+    airlineName: airlineInterface[];
+  };
+}
+
 // ---------------------------------------------
-// Flight api class
+//  Airline api class
 // ---------------------------------------------
 
 export class AirlinesApi extends BaseEndpoint {
@@ -21,26 +31,23 @@ export class AirlinesApi extends BaseEndpoint {
     super(_serverAddress);
   }
 
-  // ---------------------------------------------
-  // Polling
-  // ---------------------------------------------
-
   async pollAirlines({ callback, onUpdate, waitTime }: pollAirportsProps) {
     const pollFunc = async () => {
       onUpdate(true);
       const res = await this.getAirlines();
+      const airlineLookup: { [key: string]: string } = {};
+      const { airlineName } = res.airlineNames;
+      for (let s of airlineName) {
+        airlineLookup[s._code] = s._name;
+      }
       onUpdate(false);
-      return res;
+      return airlineLookup;
     };
 
     super.createPollResource({ pollFunc, callback, waitTime });
   }
 
-  // ---------------------------------------------
-  // Fetches
-  // ---------------------------------------------
-
-  async getAirlines() {
+  async getAirlines(): Promise<airlineResponse> {
     const url = this.getApiUrl("airlineNames.asp", "");
     const method = "GET";
     const body = {};

@@ -30,3 +30,8 @@
 - not immutable data atm
 - not working on mobile (not reponsive)
 - not using updaet_ley to minimize the paylaod
+- not mapped summertime (append UTC to date)
+- not mapped error code or ailrines
+- not created 'empty/loading' screens
+- not responseive on mobile
+- error handling not ideal atm

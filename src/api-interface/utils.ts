@@ -32,6 +32,7 @@ export function callEndpoint({
     xhr.open(method, url);
     if (contentType) xhr.setRequestHeader("Content-Type", contentType);
     if (compression) xhr.setRequestHeader("Payload-Encoding", compression);
+
     // TODO add caching logic
     // xhr.setRequestHeader("Cache-Control", "private, max-age=180");
 
@@ -49,71 +50,12 @@ export function getApiUrl(
   return `${endpointObj.serverAddress}${endpointObj.endpointPrefix}${s1}${s2}`;
 }
 
-// ---------------------------------------------
-// airport utils
-// ---------------------------------------------
-interface getFromToAirportProps {
-  airport: string;
-  from: object;
-  to: object;
-}
-// find all flights that goes from a spesified airport to SOME other airport
-export const getFromToAirport = ({
-  airport,
-  from,
-  to,
-}: getFromToAirportProps) => {
-  const fromKeys = Object.keys(from);
-  const toKeys = Object.keys(to);
-  const flight_ids = new Set();
-  for (let fk of fromKeys) {
-    const source_airport = from[fk].source_airport.toLowerCase();
-    const toFromAirport = from[fk].airport.toLowerCase();
-    const arr_dep = from[fk].arr_dep;
-    if (source_airport == airport || toFromAirport == airport)
-      flight_ids.add(fk);
-    // if (source_airport == airport && arr_dep == "A") arrivals.add(fk);
-  }
-  for (let tk of toKeys) {
-    const cursorAirport = to[tk].source_airport.toLowerCase();
-    if (cursorAirport == airport) flight_ids.add(tk);
-    const source_airport = to[tk].source_airport.toLowerCase();
-    const toFromAirport = to[tk].airport.toLowerCase();
-    const arr_dep = to[tk].arr_dep;
-    if (source_airport == airport || toFromAirport == airport)
-      flight_ids.add(tk);
-    // if (source_airport == airport && arr_dep == "D") departures.add(tk);
-  }
-
-  return [...flight_ids];
-};
-
-interface getFromToAirportsProps {
-  fromAirport: string;
-  toAirport: string;
-  from: object;
-  to: object;
-}
-// find all flights that goes from a spesified airport to a spesified other
-export const getFromToAirports = ({
-  fromAirport,
-  toAirport,
-  from,
-  to,
-}: getFromToAirportsProps) => {
-  const fromKeys = Object.keys(from);
-  const toKeys = Object.keys(to);
-  const flight_ids = new Set();
-  for (let fk of fromKeys) {
-    const dep = from[fk].airport.toLowerCase();
-    const arr = to[fk] && to[fk].airport.toLowerCase();
-    if (dep == fromAirport && arr == toAirport) flight_ids.add(fk);
-  }
-  return [...flight_ids];
-};
-
+// get the diff hours (duration) of two dates
 export function diff_hours(dt2: Date, dt1: Date) {
   var diff = (dt2.getTime() - dt1.getTime()) / 1000;
   diff /= 60 * 60;
   return Math.abs(Math.round(diff));
 }
+
+// append a 0 to ensure 2 digits. e.g format the number 1 to 01 a
+export const formatTo2Digits = (num: number) => String(num).padStart(2, "0");
