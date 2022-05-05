@@ -10,6 +10,16 @@
 - Client side queries on relevant aiports only
     - Might not be ideal, but fastest to implement and no server involved
 
+## How to use
+Clone repo and run ```yarn && yarn vite ```
+
+In addition, the application is deployed to two urls: 
+- with a external proxy cerver for CORS: [avinor-api-corsproxy.surge.sh](https://avinor-api-corsproxy.surge.sh/).
+- without any proxy stuff. You need to use a chrome extention or something: [avinor-api-nocorsproxy.surge.sh](https://avinor-api-nocorsproxy.surge.sh/).
+
+![plot](./logo.svg)
+
+
 ### Interesting questions to answer
 - webworkers?
     - Might be nice, but as payload is small the parsing/formatting time might very well be equal to the copy operation between the treads. 
