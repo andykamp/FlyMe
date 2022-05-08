@@ -59,6 +59,15 @@ function App() {
       waitTime: STATIC_POLL_INTERVAL,
     });
 
+    // poll actual data
+    ApiContainer.FlightApi.pollFullData({
+      callback: (res) => {
+        setFlightData(res);
+      },
+      waitTime: DYNAMIC_POLL_INTERVAL,
+      onUpdate: (loading: boolean) => setLoading(loading),
+    });
+
     // cleanup at unmount
     return () => {
       ApiContainer.FlightApi.stopPolling();
@@ -70,15 +79,14 @@ function App() {
   //  user changed the selected airport  by dropdown
   const airportChanged = (airport: string) => {
     setSelectedAirport(airport);
-
-    ApiContainer.FlightApi.pollAirportData({
-      airport,
-      callback: (res) => {
-        setFlightData(res);
-      },
-      waitTime: DYNAMIC_POLL_INTERVAL,
-      onUpdate: (loading: boolean) => setLoading(loading),
-    });
+    // ApiContainer.FlightApi.pollAirportData({
+    //   airport,
+    //   callback: (res) => {
+    //     setFlightData(res);
+    //   },
+    //   waitTime: DYNAMIC_POLL_INTERVAL,
+    //   onUpdate: (loading: boolean) => setLoading(loading),
+    // });
   };
 
   // toggle theme between light/datk

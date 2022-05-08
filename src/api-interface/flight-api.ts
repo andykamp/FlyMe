@@ -194,6 +194,17 @@ export class FlightApi extends BaseEndpoint {
   // Polling
   // ---------------------------------------------
 
+  async pollFullData({ callback, onUpdate, waitTime }: pollFullDataProps) {
+    const pollFunc = async () => {
+      onUpdate(true);
+      const res = await this.getAirportDataFull();
+      onUpdate(false);
+      return res;
+    };
+
+    super.createPollResource({ pollFunc, callback, waitTime });
+  }
+
   async pollAirportData({
     airport,
     callback,
@@ -213,6 +224,81 @@ export class FlightApi extends BaseEndpoint {
   // ---------------------------------------------
   // Fetches
   // ---------------------------------------------
+
+  async getAirportDataFull() {
+    // init new data
+    const departures: { [key: string]: FlightInterface } = {};
+    const arrivals: { [key: string]: FlightInterface } = {};
+    const allFlightIds: Set<string> = new Set();
+
+    const t1_tot = performance.now();
+
+    // stack up all calls  in a promise array
+    const promises = [];
+    for (let a of airportsInNorway) {
+      const airport = a.code.toUpperCase();
+      promises.push(
+        this.getAirportData({
+          airport,
+          timeFrom: 0,
+          timeTo: 24,
+        })
+      );
+    }
+
+    // add progress callbacks to the promises to get progressbar
+    allProgress(promises, (p: number) => {
+      console.log(`% Done = ${p.toFixed(2)}`);
+    });
+
+    // await all promises
+    const t1_fetch = performance.now();
+    const allData = await Promise.all(promises);
+    const t2_fetch = performance.now();
+    console.log(
+      `getAirportDataFull fetching took ${t2_fetch - t1_fetch} ms (${
+        (t2_fetch - t1_fetch) / 100
+      })s`
+    );
+
+    // parse result for all promises
+    const t1_parse = performance.now();
+    for (let airportData of allData) {
+      const { _name } = airportData.airport;
+      let flights = airportData.airport.flights.flight;
+      if (!flights) continue;
+      // handle edge-case where 1 flight is given as object and not list
+      if (!Array.isArray(flights)) flights = [flights];
+      // loop trough flights and cache  get airports
+      for (let f of flights) {
+        // add info about what airport it
+        f.source_airport = _name;
+        if (f.arr_dep == "D") departures[f.flight_id] = f;
+        else if (f.arr_dep == "A") arrivals[f.flight_id] = f;
+        allFlightIds.add(f.flight_id);
+      }
+    }
+
+    const t2_parse = performance.now();
+    console.log(
+      `getAirportDataFull parsing took ${t2_parse - t1_parse} ms (${
+        (t2_parse - t1_parse) / 100
+      })s`
+    );
+
+    const t2_tot = performance.now();
+    console.log(
+      `getAirportDataFull total took ${t2_tot - t1_tot} ms (${
+        (t2_tot - t1_tot) / 100
+      })s`
+    );
+
+    return {
+      arrivals,
+      departures,
+      allFlightIds: [...allFlightIds],
+    };
+  }
 
   async getPopulatedAirportData({ airport }: { airport: string }) {
     // init new data
@@ -303,80 +389,15 @@ export class FlightApi extends BaseEndpoint {
 }
 
 // Unused code to poll and fetch all data. Eg for polling all data every 3 minutes
-/*
 
-  async pollFullData({ callback, onUpdate, waitTime }: pollFullDataProps) {
-    const pollFunc = async () => {
-      onUpdate(true);
-      const res = await this.getAirportDataFull();
-      onUpdate(false);
-      return res;
-    };
-
-    super.createPollResource({ pollFunc, callback, waitTime });
+function allProgress(proms: any, progress_cb: (p: number) => void) {
+  let d = 0;
+  progress_cb(0);
+  for (const p of proms) {
+    p.then(() => {
+      d++;
+      progress_cb((d * 100) / proms.length);
+    });
   }
-
-  async getAirportDataFull() {
-    // empty data
-    this.departures = {};
-    this.arrivals = {};
-
-    const t1_tot = performance.now();
-
-    // stack up all calls  in a promise array
-    const promises = [];
-    for (let a of airportsInNorway) {
-      const airport = a.code.toUpperCase();
-      promises.push(
-        this.getAirportData({
-          airport,
-          timeFrom: 0,
-          timeTo: 24,
-        })
-      );
-    }
-
-    // await all promises
-    const t1_fetch = performance.now();
-    const allData = await Promise.all(promises);
-    const t2_fetch = performance.now();
-    console.log(
-      `getAirportDataFull fetching took ${t2_fetch - t1_fetch} ms (${
-        (t2_fetch - t1_fetch) / 100
-      })s`
-    );
-
-    // parse result for all promises
-    const t1_parse = performance.now();
-    for (let airportData of allData) {
-      const { _name } = airportData.airport;
-      let flights = airportData.airport.flights.flight;
-      if (!flights) continue;
-      // handle edge-case where 1 flight is given as object and not list
-      if (!Array.isArray(flights)) flights = [flights];
-      // loop trough flights and cache  get airports
-      for (let f of flights) {
-        // add info about what airport it
-        f.source_airport = _name;
-        if (f.arr_dep == "D") this.departures[f.flight_id] = f;
-        else if (f.arr_dep == "A") this.arrivals[f.flight_id] = f;
-      }
-    }
-
-    const t2_parse = performance.now();
-    console.log(
-      `getAirportDataFull parsing took ${t2_parse - t1_parse} ms (${
-        (t2_parse - t1_parse) / 100
-      })s`
-    );
-
-    const t2_tot = performance.now();
-    console.log(
-      `getAirportDataFull total took ${t2_tot - t1_tot} ms (${
-        (t2_tot - t1_tot) / 100
-      })s`
-    );
-  }
-
-
-*/
+  return Promise.all(proms);
+}
