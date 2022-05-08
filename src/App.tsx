@@ -1,23 +1,19 @@
 import { useState, useEffect } from "react";
-import Logo from "./logo.svg";
 import { ApiContainer } from "./api-interface";
 import { airportsInNorway } from "./data";
 import { ThemeProvider } from "styled-components";
 import { ThemeContext, getTheme } from "./theme";
-import { Select, Tooltip, Tag } from "antd";
-import { CheckCircleOutlined, SyncOutlined } from "@ant-design/icons";
+import { Select, Tag } from "antd";
+import { SyncOutlined } from "@ant-design/icons";
+import { Header } from "./Header";
 import {
   GlobalStyle,
   StyledApp,
-  StyledHeader,
-  StyledLogoContainer,
-  StyledHeaderContent,
   StyledContent,
   StyledPanel,
   StyledTitle,
   StyledSelect,
   StyledParagraph,
-  Row,
   StyledIntroItem,
   StyledIntroContainer,
 } from "./styled-components";
@@ -103,40 +99,7 @@ function App() {
         <GlobalStyle />
 
         <StyledApp>
-          <StyledHeader>
-            <StyledHeaderContent>
-              <StyledLogoContainer>
-                <img src={Logo} alt="logo" />
-                <StyledTitle>API Avinor</StyledTitle>
-              </StyledLogoContainer>
-              <Row style={{ gap: 8 }}>
-                {/*<div onClick={toggleTheme}>toggle theme</div>*/}
-                <div>
-                  {loading ? (
-                    <Tooltip title=" Syncing requested data with Avinor. This website fetches data every 3 minutes. ">
-                      <Tag
-                        style={{ background: "rgba(0,0,0,0.2)" }}
-                        icon={<SyncOutlined spin />}
-                        color="processing"
-                      >
-                        Syncing data
-                      </Tag>
-                    </Tooltip>
-                  ) : (
-                    <Tooltip title=" All requested data is currently synced with Avinor. This website fetches data every 3 minutes. ">
-                      <Tag
-                        style={{ background: "rgba(0,0,0,0.2)" }}
-                        icon={<CheckCircleOutlined />}
-                        color="success"
-                      >
-                        Data synced
-                      </Tag>
-                    </Tooltip>
-                  )}
-                </div>
-              </Row>
-            </StyledHeaderContent>
-          </StyledHeader>
+          <Header activePage="somethign" />
           <StyledContent>
             <StyledPanel>
               <StyledIntroContainer>
