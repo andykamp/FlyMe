@@ -194,10 +194,15 @@ export class FlightApi extends BaseEndpoint {
   // Polling
   // ---------------------------------------------
 
-  async pollFullData({ callback, onUpdate, waitTime }: pollFullDataProps) {
+  async pollFullData({
+    callback,
+    onUpdate,
+    progressCallback,
+    waitTime,
+  }: pollFullDataProps) {
     const pollFunc = async () => {
       onUpdate(true);
-      const res = await this.getAirportDataFull();
+      const res = await this.getAirportDataFull({ progressCallback });
       onUpdate(false);
       return res;
     };
@@ -225,7 +230,7 @@ export class FlightApi extends BaseEndpoint {
   // Fetches
   // ---------------------------------------------
 
-  async getAirportDataFull() {
+  async getAirportDataFull({ progressCallback }) {
     // init new data
     const departures: { [key: string]: FlightInterface } = {};
     const arrivals: { [key: string]: FlightInterface } = {};
@@ -249,6 +254,7 @@ export class FlightApi extends BaseEndpoint {
     // add progress callbacks to the promises to get progressbar
     allProgress(promises, (p: number) => {
       console.log(`% Done = ${p.toFixed(2)}`);
+      if (progressCallback) progressCallback(p.toFixed(2));
     });
 
     // await all promises

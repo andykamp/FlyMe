@@ -15,6 +15,7 @@ export const GlobalStyle = createGlobalStyle<{ theme: ThemeInterface }>`
 `;
 
 export const StyledApp = styled.div<{ theme: ThemeInterface }>`
+  position: relatve;
   display: flex;
   flex-direction: column;
   justify-content: flex-start;
@@ -44,6 +45,7 @@ export const StyledLogoContainer = styled.div<{ theme: ThemeInterface }>`
   justify-content: center;
   align-items: center;
   gap: 24px;
+  cursor: pointer;
 `;
 
 export const StyledHeaderContent = styled.div<{ theme: ThemeInterface }>`
