@@ -40,13 +40,14 @@ const StyledContainer = styled.div`
   align-items: center;
 `;
 const StyledInnerContainer = styled.div`
-  width: 400px;
+  width: 150px;
   letter-spacing: 5px;
   display: flex;
   flex-direction: column;
   justify-content: flex-start;
   align-items: flex-start;
   animation: ${(p) => fadeIn} 200ms;
+  gap: 8px;
 `;
 
 const StyledProgress = styled(Progress)`
@@ -79,7 +80,7 @@ export const LoadingScreen = ({ progress }: Props) => {
       <StyledInnerContainer>
         <StyledLogoContainer onClick={() => navigate("/", { replace: true })}>
           <img src={Logo} alt="logo" />
-          <StyledTitle>API Avinor</StyledTitle>
+          <StyledTitle>FlyMe</StyledTitle>
         </StyledLogoContainer>
         <StyledProgress percent={progress || 0} showInfo={false} />
       </StyledInnerContainer>

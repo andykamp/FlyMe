@@ -230,7 +230,7 @@ export const StyledValue = styled.div<{ theme: ThemeInterface }>`
 
 export const StyledParagraph = styled.p<{ theme: ThemeInterface }>`
   color: ${(props) => props.theme.general.textColor};
-  margin: 8px 0 0;
+  margin: 8px 0 8px;
 `;
 
 export const StyledLink = styled.div<{ theme: ThemeInterface }>`

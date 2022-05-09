@@ -1,8 +1,10 @@
 import { useState, useEffect } from "react";
+import styled from "styled-components";
 import { airportsInNorway } from "../data";
 import { Select, Tag } from "antd";
 import { SwapOutlined } from "@ant-design/icons";
 import { useOutletContext } from "react-router-dom";
+import FromToImg from "../Fromto.svg";
 
 import {
   StyledContent,
@@ -20,6 +22,12 @@ interface Props {
   statusCodes: any;
   airlines: any;
 }
+
+const StyledImg = styled.img`
+  margin-top: 40px;
+  object-fit: contain;
+  width: 50%;
+`;
 
 export const FromTo = ({ loading, statusCodes, airlines }: Props) => {
   // TODO do this for ailines and status code also
@@ -99,7 +107,7 @@ export const FromTo = ({ loading, statusCodes, airlines }: Props) => {
           </StyledIntroItem>
         </StyledIntroContainer>
       </StyledPanel>
-      {!loading && flightData && (
+      {!loading && flightData && fromAirport && toAirport && (
         <FilteredList
           fromAirport={fromAirport}
           toAirport={toAirport}
@@ -107,6 +115,9 @@ export const FromTo = ({ loading, statusCodes, airlines }: Props) => {
           statusCodes={statusCodes}
           airlines={airlines}
         />
+      )}
+      {(!fromAirport || !toAirport) && (
+        <StyledImg src={FromToImg} alt="FromTo" />
       )}
     </StyledContent>
   );

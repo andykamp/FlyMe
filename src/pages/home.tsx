@@ -101,14 +101,13 @@ export const Home = () => {
     <StyledContainer>
       <StyledTextContainer>
         <StyledTextInnerContainer>
-          <StyledTitle>Select airport and fly</StyledTitle>
+          <StyledTitle>Welcome to FlyMe!</StyledTitle>
           <StyledParagraph>
-            You will be able to see arrivals and departures for the selected
-            airport. We use Avinor’s API to make sure we are always up to date!
-            You can see the full list of airports here.
+            We make flight planning easier. We utilize Avinor’s open API to
+            provide the following services:
           </StyledParagraph>
           <StyledButton onClick={() => navigate("/fromto", { replace: true })}>
-            From/To Planner
+            Flight planner
           </StyledButton>
           <StyledDivider>or</StyledDivider>
           <StyledButton onClick={() => navigate("/arrdep", { replace: true })}>
@@ -119,7 +118,7 @@ export const Home = () => {
 
       <StyledIllustration>
         <StyledImgContainer>
-          <StyledImg src={Hero} alt="logo" />
+          <StyledImg src={Hero} alt="hero" />
         </StyledImgContainer>
       </StyledIllustration>
     </StyledContainer>

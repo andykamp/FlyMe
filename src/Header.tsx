@@ -29,7 +29,7 @@ export const Header = ({ loading }: Props) => {
       <StyledHeaderContent>
         <StyledLogoContainer onClick={() => navigate("/", { replace: true })}>
           <img src={Logo} alt="logo" />
-          <StyledTitle>API Avinor</StyledTitle>
+          <StyledTitle>FlyMe</StyledTitle>
         </StyledLogoContainer>
         <StyledHeaderMenu>
           {/*<div onClick={toggleTheme}>toggle theme</div>*/}

@@ -1,8 +1,10 @@
 import { useState, useEffect } from "react";
+import styled from "styled-components";
 import { airportsInNorway } from "../data";
 import { Select, Tag } from "antd";
 import { SyncOutlined } from "@ant-design/icons";
 import { useOutletContext } from "react-router-dom";
+import ArrDep from "../ArrDep.svg";
 
 import {
   StyledContent,
@@ -14,6 +16,12 @@ import {
   StyledIntroContainer,
 } from "../styled-components";
 import { FilteredListSeperated } from "../List";
+
+const StyledImg = styled.img`
+  margin-top: 40px;
+  object-fit: contain;
+  width: 50%;
+`;
 
 interface Props {
   loading: any;
@@ -35,14 +43,6 @@ export const ArrivalsDepartures = ({
   //  user changed the selected airport  by dropdown
   const airportChanged = (airport: string) => {
     setSelectedAirport(airport);
-    // ApiContainer.FlightApi.pollAirportData({
-    //   airport,
-    //   callback: (res) => {
-    //     setFlightData(res);
-    //   },
-    //   waitTime: DYNAMIC_POLL_INTERVAL,
-    //   onUpdate: (loading: boolean) => setLoading(loading),
-    // });
   };
 
   return (
@@ -56,7 +56,7 @@ export const ArrivalsDepartures = ({
               onChange={airportChanged}
               value={selectedAirport}
               showSearch
-              placeholder="Search for airport"
+              placeholder="Select a airport"
               optionFilterProp="children"
               filterOption={(input, option) =>
                 option.children.toLowerCase().indexOf(input.toLowerCase()) >= 0
@@ -102,6 +102,7 @@ export const ArrivalsDepartures = ({
           airlines={airlines}
         />
       )}
+      {!selectedAirport && <StyledImg src={ArrDep} alt="logo" />}
     </StyledContent>
   );
 };
