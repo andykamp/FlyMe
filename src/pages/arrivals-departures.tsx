@@ -54,7 +54,7 @@ export const ArrivalsDepartures = ({ loading }: Props) => {
               onChange={airportChanged}
               value={selectedAirport}
               showSearch
-              placeholder="Select a airport"
+              placeholder="Select an airport"
               optionFilterProp="children"
               filterOption={(input, option) =>
                 option.children.toLowerCase().indexOf(input.toLowerCase()) >= 0

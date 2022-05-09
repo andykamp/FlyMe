@@ -1,32 +1,9 @@
-import styled, { keyframes } from "styled-components";
+import styled from "styled-components";
 import ReactDOM from "react-dom";
 import Logo from "../assets/logo.svg";
 import { Progress } from "antd";
-import { StyledLogoContainer, StyledTitle } from "../styled-components";
+import { StyledLogoContainer, fadeIn, scaleInX } from "../styled-components";
 
-const fadeIn = keyframes`
-  from {
-    transform: scale(.25);
-    opacity: 0;
-  }
-
-  to {
-    transform: scale(1);
-    opacity: 1;
-  }
-`;
-
-const scaleInX = keyframes`
-  from {
-    transform: scale(.50, 1);
-    opacity: 1;
-  }
-
-  to {
-    transform: scale(1., 1.);
-    opacity: 1;
-  }
-`;
 const StyledContainer = styled.div`
   position: absolute;
   width: 100vw;
@@ -40,7 +17,7 @@ const StyledContainer = styled.div`
   align-items: center;
 `;
 const StyledInnerContainer = styled.div`
-  width: 150px;
+  width: 210px;
   letter-spacing: 5px;
   display: flex;
   flex-direction: column;
@@ -64,10 +41,19 @@ const StyledProgress = styled(Progress)`
     border: 1px solid ${(props) => props.theme.general.bg};
     border-radius: 0px;
   }
-  color: red;
   .ant-progress-text {
     color: ${(props) => props.theme.general.textColor};
   }
+`;
+
+const StyledLogoTitle = styled.div`
+  font-size: 2rem;
+  font-size: ${(props) => props.theme.general.fontSizeTitle};
+  color: ${(props) => props.theme.general.titleColor};
+  font-weight: bold;
+  letter-spacing: 0.05em;
+  // text-transform: uppercase;
+  animation: ${(p) => fadeIn} 400ms;
 `;
 
 interface Props {
@@ -79,8 +65,8 @@ export const LoadingScreen = ({ progress }: Props) => {
     <StyledContainer>
       <StyledInnerContainer>
         <StyledLogoContainer onClick={() => navigate("/", { replace: true })}>
-          <img src={Logo} alt="logo" />
-          <StyledTitle>FlyMe</StyledTitle>
+          <img src={Logo} alt="logo" style={{ width: 50 }} />
+          <StyledLogoTitle style={{ fontSize: 40 }}>FlyMe</StyledLogoTitle>
         </StyledLogoContainer>
         <StyledProgress percent={progress || 0} showInfo={false} />
       </StyledInnerContainer>

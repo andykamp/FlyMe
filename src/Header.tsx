@@ -15,9 +15,10 @@ import {
 
 interface Props {
   loading: boolean;
+  toggleTheme: () => void;
 }
 
-export const Header = ({ loading }: Props) => {
+export const Header = ({ loading, toggleTheme }: Props) => {
   const navigate = useNavigate();
   const location = useLocation();
   const currentRoute = location.pathname;
@@ -28,7 +29,7 @@ export const Header = ({ loading }: Props) => {
       <StyledHeaderContent>
         <StyledLogoContainer onClick={() => navigate("/", { replace: true })}>
           <img src={Logo} alt="logo" />
-          <StyledTitle>FlyMe</StyledTitle>
+          <StyledTitle style={{ textTransform: "none" }}>FlyMe</StyledTitle>
         </StyledLogoContainer>
         <StyledHeaderMenu>
           {/*<div onClick={toggleTheme}>toggle theme</div>*/}
@@ -75,6 +76,6 @@ export const Header = ({ loading }: Props) => {
 };
 
 Header.defaultProps = {
-  acticePage: "home",
   loading: false,
+  toggleTheme: () => null,
 };

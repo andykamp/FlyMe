@@ -69,7 +69,7 @@ const StyledImg = styled.img`
 `;
 const StyledButton = styled.div`
   width: 100%;
-  height: 32px;
+  height: 50px;
   letter-spacing: 0.05em;
   text-transform: uppercase;
   background: ${(props) => addAlpha(props.theme.accent.green, 0.7)};

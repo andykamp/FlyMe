@@ -16,7 +16,6 @@ const DYNAMIC_POLL_INTERVAL = 3 * 60 * 1000; // 3 minutes as suggested in doc
 const STATIC_POLL_INTERVAL = 24 * 3600 * 1000; // 24 hours as suggested in doc
 
 // create context for data
-
 export const StatusCodeContext = createContext({});
 export const AirlinesContext = createContext({});
 
@@ -82,7 +81,7 @@ function App() {
         <GlobalStyle />
 
         <StyledApp>
-          <Header loading={loading} />
+          <Header loading={loading} toggleTheme={toggleTheme} />
           <StatusCodeContext.Provider value={statusCodes}>
             <AirlinesContext.Provider value={airlines}>
               <Outlet context={[flightData, setFlightData]} />

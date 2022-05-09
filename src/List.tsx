@@ -1,11 +1,12 @@
 import { ApiContainer } from "./api-interface";
 import { Tooltip } from "antd";
-import { FlightInterface } from "./api-interface/flight-api";
+import { FlightInterface, EnrichedInfo } from "./api-interface/flight-api";
 import {
   StyledListPanel,
   StyledList,
   StyledListItem,
   StyledTableValue,
+  StyledTableValueStatus,
   StyledTabs,
   StyledTab,
   StyledTitle,
@@ -14,7 +15,7 @@ import {
 } from "./styled-components";
 
 // ---------------------------------------------
-// List container
+// from-to list
 // ---------------------------------------------
 
 interface FilteredList {
@@ -36,7 +37,7 @@ export const FilteredList = ({
   statusCodes,
   airlines,
 }: FilteredList) => {
-  let relevantFlights;
+  let relevantFlights: any;
   if (!fromAirport || !toAirport) relevantFlights = [];
   else
     relevantFlights = flightData.allFlightIds.filter((flight_id) => {
@@ -48,14 +49,20 @@ export const FilteredList = ({
         f.airport === toAirport.toUpperCase()
       );
     });
-  const flightsWithInfo = relevantFlights.map((f: string) =>
-    ApiContainer.FlightApi._getEnrichedFlightInfo(
-      f,
-      flightData,
-      airlines,
-      statusCodes
+
+  const sortArrivalfunc = (a: EnrichedInfo, b: EnrichedInfo) =>
+    a.arrivalTimestamp - b.arrivalTimestamp;
+
+  const flightsWithInfo = relevantFlights
+    .map((f: string) =>
+      ApiContainer.FlightApi._getEnrichedFlightInfo(
+        f,
+        flightData,
+        airlines,
+        statusCodes
+      )
     )
-  );
+    .sort(sortArrivalfunc);
 
   const isEmpty = !flightsWithInfo.length;
 
@@ -73,34 +80,29 @@ export const FilteredList = ({
       )}
       {isEmpty && (
         <StyledListPanel style={{ height: 80, padding: 24 }}>
-          No results on this trip...
+          No results on this travel distance before today 23:59...
         </StyledListPanel>
       )}
     </Row>
   );
 };
 
+// ---------------------------------------------
+// from -to list header and item
+// ---------------------------------------------
+
 export const ListHeader = () => {
   return (
     <StyledListItem header>
       <Row style={{ gap: 8 }}>
-        <StyledTableValue header width={60}>
-          Flight
+        <StyledTableValue header width={120}>
+          Time
         </StyledTableValue>
-        <StyledTableValue header width={100}>
+        <StyledTableValue header width={150}>
           Airline
         </StyledTableValue>
-        <StyledTableValue header width={180}>
-          Departure
-        </StyledTableValue>
-        <StyledTableValue header width={180}>
-          Arrival
-        </StyledTableValue>
-        <StyledTableValue header width={200}>
-          From
-        </StyledTableValue>
-        <StyledTableValue header width={200}>
-          to
+        <StyledTableValue header width={100}>
+          Flight
         </StyledTableValue>
       </Row>
       <StyledTableValue header width={150}>
@@ -109,6 +111,38 @@ export const ListHeader = () => {
     </StyledListItem>
   );
 };
+
+export const ListItem = ({ flightInfo, index }: ListItemInterface) => {
+  const {
+    flight_id,
+    arrivalTimeFormatted,
+    departureTimeFormatted,
+    departureStatus,
+    airline,
+  } = flightInfo;
+
+  return (
+    <StyledListItem key={flight_id} altNum={index % 2 == 0}>
+      <Row style={{ gap: 8 }}>
+        <StyledTableValue width={120}>
+          {departureTimeFormatted}-{arrivalTimeFormatted}
+        </StyledTableValue>
+        <StyledTableValue width={150}>{airline}</StyledTableValue>
+        <StyledTableValue width={100}>{flight_id}</StyledTableValue>
+      </Row>
+      <StyledTableValueStatus
+        width={150}
+        status={departureTimeFormatted == "-" ? "Unmapped" : departureStatus}
+      >
+        {departureTimeFormatted == "-" ? "Unmapped" : departureStatus}
+      </StyledTableValueStatus>
+    </StyledListItem>
+  );
+};
+
+// ---------------------------------------------
+//  Arrival/departure list
+// ---------------------------------------------
 
 interface FilteredListSeperatedProps {
   selectedAirport: string;
@@ -142,12 +176,18 @@ export const FilteredListSeperated = ({
     )
   );
 
-  const arrivals = flightsWithInfo.filter(
-    (f) => f.to_airport == uppercaseAirport
-  );
-  const departures = flightsWithInfo.filter(
-    (f) => f.from_airport == uppercaseAirport
-  );
+  const sortDeparturefunc = (a: EnrichedInfo, b: EnrichedInfo) =>
+    a.departureTimestamp - b.departureTimestamp;
+  const sortArrivalfunc = (a: EnrichedInfo, b: EnrichedInfo) =>
+    a.arrivalTimestamp - b.arrivalTimestamp;
+
+  const arrivals = flightsWithInfo
+    .filter((f) => f.to_airport == uppercaseAirport)
+    .sort(sortArrivalfunc);
+  let departures = flightsWithInfo
+    .filter((f) => f.from_airport == uppercaseAirport)
+    .sort(sortDeparturefunc);
+
   const arrivalsIsEmpty = !arrivals.length;
   const departureslsIsEmpty = !departures.length;
   return (
@@ -179,7 +219,7 @@ export const FilteredListSeperated = ({
         )}
         {arrivalsIsEmpty && tab == "arrivals" && (
           <StyledListPanel style={{ height: 80, padding: 24 }}>
-            No results on this airport...
+            No arrivals on this airport before today 23:59...
           </StyledListPanel>
         )}
         {!departureslsIsEmpty && tab == "departures" && (
@@ -194,7 +234,7 @@ export const FilteredListSeperated = ({
         )}
         {departureslsIsEmpty && tab == "departures" && (
           <StyledListPanel style={{ height: 80, padding: 24 }}>
-            No results on this airport...
+            No departures on this airport before today 23:59...
           </StyledListPanel>
         )}
       </Row>
@@ -202,18 +242,22 @@ export const FilteredListSeperated = ({
   );
 };
 
+// ---------------------------------------------
+// from -to list header and item
+// ---------------------------------------------
+
 export const ListHeaderArrival = () => {
   return (
     <StyledListItem header>
       <Row style={{ gap: 8 }}>
         <StyledTableValue header width={60}>
-          Flight
+          Time
         </StyledTableValue>
-        <StyledTableValue header width={100}>
+        <StyledTableValue header width={150}>
           Airline
         </StyledTableValue>
-        <StyledTableValue header width={180}>
-          Arrival
+        <StyledTableValue header width={80}>
+          Flight
         </StyledTableValue>
         <StyledTableValue header width={200}>
           From
@@ -231,18 +275,18 @@ export const ListHeaderDepartures = () => {
     <StyledListItem header>
       <Row style={{ gap: 8 }}>
         <StyledTableValue header width={60}>
-          Flight
+          Time
         </StyledTableValue>
-        <StyledTableValue header width={100}>
+        <StyledTableValue header width={150}>
           Airline
         </StyledTableValue>
-        <StyledTableValue header width={180}>
-          Departure
+        <StyledTableValue header width={80}>
+          Flight
         </StyledTableValue>
         <StyledTableValue header width={200}>
           Destination
         </StyledTableValue>
-        <StyledTableValue header width={100}>
+        <StyledTableValue header width={60}>
           Gate
         </StyledTableValue>
       </Row>
@@ -253,44 +297,6 @@ export const ListHeaderDepartures = () => {
   );
 };
 
-// ---------------------------------------------
-// List items
-// ---------------------------------------------
-
-export const ListItem = ({ flightInfo, index }: ListItemInterface) => {
-  const {
-    flight_id,
-    arrivalTimeFormatted,
-    departureTimeFormatted,
-    from_airport_full,
-    from_city,
-    to_airport_full,
-    to_city,
-    arrivalStatus,
-    airline,
-  } = flightInfo;
-
-  return (
-    <StyledListItem key={flight_id} altNum={index % 2 == 0}>
-      <Row style={{ gap: 8 }}>
-        <StyledTableValue width={60}>{flight_id}</StyledTableValue>
-        <StyledTableValue width={100}>{airline}</StyledTableValue>
-
-        <StyledTableValue width={180}>
-          {departureTimeFormatted}
-        </StyledTableValue>
-        <StyledTableValue width={180}>{arrivalTimeFormatted}</StyledTableValue>
-        <Tooltip title={from_airport_full}>
-          <StyledTableValue width={200}>{from_city}</StyledTableValue>
-        </Tooltip>
-        <Tooltip title={to_airport_full}>
-          <StyledTableValue width={200}>{to_city}</StyledTableValue>
-        </Tooltip>
-      </Row>
-      <StyledTableValue width={150}>{arrivalStatus}</StyledTableValue>
-    </StyledListItem>
-  );
-};
 interface ListItemInterface {
   flightInfo: any;
   index: number;
@@ -300,7 +306,6 @@ export const ListItemArrival = ({ flightInfo, index }: ListItemInterface) => {
   const {
     flight_id,
     arrivalTimeFormatted,
-    departureTimeFormatted,
     from_airport_full,
     from_city,
     arrivalStatus,
@@ -310,23 +315,25 @@ export const ListItemArrival = ({ flightInfo, index }: ListItemInterface) => {
   return (
     <StyledListItem key={flight_id} altNum={index % 2 == 0}>
       <Row style={{ gap: 8 }}>
-        <StyledTableValue width={60}>{flight_id}</StyledTableValue>
-        <StyledTableValue width={100}>{airline}</StyledTableValue>
-        <StyledTableValue width={180}>
-          {arrivalTimeFormatted} (departure {departureTimeFormatted})
-        </StyledTableValue>
+        <StyledTableValue width={60}>{arrivalTimeFormatted}</StyledTableValue>
+        <StyledTableValue width={150}>{airline}</StyledTableValue>
+        <StyledTableValue width={80}>{flight_id}</StyledTableValue>
         <Tooltip title={from_airport_full}>
           <StyledTableValue width={200}>{from_city}</StyledTableValue>
         </Tooltip>
       </Row>
-      <StyledTableValue width={150}>{arrivalStatus}</StyledTableValue>
+      <StyledTableValueStatus
+        width={150}
+        status={arrivalTimeFormatted == "-" ? "Unmapped" : arrivalStatus}
+      >
+        {arrivalTimeFormatted == "-" ? "Unmapped" : arrivalStatus}
+      </StyledTableValueStatus>
     </StyledListItem>
   );
 };
 export const ListItemDeparture = ({ flightInfo, index }: ListItemInterface) => {
   const {
     flight_id,
-    arrivalTimeFormatted,
     departureTimeFormatted,
     to_airport_full,
     to_city,
@@ -338,17 +345,20 @@ export const ListItemDeparture = ({ flightInfo, index }: ListItemInterface) => {
   return (
     <StyledListItem key={flight_id} altNum={index % 2 == 0}>
       <Row style={{ gap: 8 }}>
-        <StyledTableValue width={60}>{flight_id}</StyledTableValue>
-        <StyledTableValue width={100}>{airline}</StyledTableValue>
-        <StyledTableValue width={180}>
-          {departureTimeFormatted} (arrival {arrivalTimeFormatted})
-        </StyledTableValue>
+        <StyledTableValue width={60}>{departureTimeFormatted}</StyledTableValue>
+        <StyledTableValue width={150}>{airline}</StyledTableValue>
+        <StyledTableValue width={80}>{flight_id}</StyledTableValue>
         <Tooltip title={to_airport_full}>
           <StyledTableValue width={200}>{to_city}</StyledTableValue>
         </Tooltip>
-        <StyledTableValue width={100}>{gate}</StyledTableValue>
+        <StyledTableValue width={60}>{gate}</StyledTableValue>
       </Row>
-      <StyledTableValue width={150}>{departureStatus}</StyledTableValue>
+      <StyledTableValueStatus
+        width={150}
+        status={departureTimeFormatted == "-" ? "Unmapped" : departureStatus}
+      >
+        {departureTimeFormatted == "-" ? "Unmapped" : departureStatus}
+      </StyledTableValueStatus>
     </StyledListItem>
   );
 };

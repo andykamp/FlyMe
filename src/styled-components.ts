@@ -1,6 +1,10 @@
-import styled, { createGlobalStyle } from "styled-components";
+import styled, { keyframes, createGlobalStyle } from "styled-components";
 import { Tag, Select } from "antd";
 import { ThemeInterface, addAlpha } from "./theme";
+
+// ---------------------------------------------
+// general
+// ---------------------------------------------
 
 export const GlobalStyle = createGlobalStyle<{ theme: ThemeInterface }>`
   body {
@@ -25,6 +29,10 @@ export const StyledApp = styled.div<{ theme: ThemeInterface }>`
   background: ${(props) => props.theme.general.bg};
   color: ${(props) => props.theme.general.textColor};
 `;
+
+// ---------------------------------------------
+// header
+// ---------------------------------------------
 
 export const StyledHeader = styled.header<{ theme: ThemeInterface }>`
   position: fixed;
@@ -93,6 +101,10 @@ export const StyledHeaderItem = styled.div<{
   `}
 `;
 
+// ---------------------------------------------
+// Content and misc
+// ---------------------------------------------
+
 export const StyledContent = styled.div<{ theme: ThemeInterface }>`
   display: flex;
   flex-direction: column;
@@ -136,6 +148,12 @@ export const StyledPanel = styled.div<{ theme: ThemeInterface }>`
   border-radius: 2px;
 `;
 
+export const StyledTag = styled(Tag)`
+  height: 32px;
+  line-height: 32px;
+  font-size: ${(props) => props.theme.general.fontSize};
+`;
+
 export const StyledTabs = styled.div<{ theme: ThemeInterface }>`
   display: flex;
   flex-direction: row;
@@ -160,56 +178,13 @@ export const StyledTab = styled.div<{
   background: ${(props) =>
     props.active ? props.theme.general.panelBg : "transparent"};
   border: 1px solid #1c2126;
-  //  border-top-left-radius: 8px;
-  // border-top-right-radius: 8px;
 `;
 
 export const StyledSelect = styled(Select)<{ theme: ThemeInterface }>`
   width: 100%;
-`;
-
-export const StyledListPanel = styled.div<{ theme: ThemeInterface }>`
-  display: flex;
-  flex-direction: column;
-  justify-content: flex-start;
-  align-items: flex-start;
-  width: 100%;
-  color: ${(props) => props.theme.general.titleColor};
-  background: ${(props) => props.theme.general.panelBg};
-  border: 1px solid #1c2126;
-  // border-bottom-left-radius: 8px;
-  // border-bottom-right-radius: 8px;
-`;
-
-export const StyledList = styled.div<{ theme: ThemeInterface }>`
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  align-items: center;
-  width: 100%;
-  background: ${(props) => props.theme.list.listBg};
-`;
-
-export const StyledListItem = styled.div<{
-  theme: ThemeInterface;
-  altNum?: boolean;
-  header?: boolean;
-}>`
-  display: flex;
-  flex-direction: row
-  justify-content: space-between;
-  align-items: center;
-  width: 100%;
-  height: 60px;
-  padding: 0 24px;
-  backgound: ${(props) =>
-    props.altNum ? props.theme.list.listItemAltBg : props.theme.list.listBg};
-  ${({ header, theme }) =>
-    header &&
-    `
-      //border-bottom: 4px solid ${theme.accent.green};
-      border-bottom: 1px solid #1c2126;
-  `}
+  .ant-select-selection-placeholder {
+    color: black;
+  }
 `;
 
 export const StyledTitle = styled.div<{ theme: ThemeInterface }>`
@@ -276,13 +251,82 @@ export const StyledFromToHeader = styled.div<{ theme: ThemeInterface }>`
   align-items: center;
   width: 100%;
 `;
+// ---------------------------------------------
+// list
+// ---------------------------------------------
 
-export const Row = styled.div`
+export const StyledListPanel = styled.div<{ theme: ThemeInterface }>`
   display: flex;
-  flex-direction: row;
+  flex-direction: column;
   justify-content: flex-start;
   align-items: flex-start;
+  width: 100%;
+  color: ${(props) => props.theme.general.titleColor};
+  background: ${(props) => props.theme.general.panelBg};
+  border: 1px solid #1c2126;
+  // border-bottom-left-radius: 8px;
+  // border-bottom-right-radius: 8px;
 `;
+
+export const StyledList = styled.div<{ theme: ThemeInterface }>`
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  width: 100%;
+  background: ${(props) => props.theme.list.listBg};
+`;
+
+export const StyledListItem = styled.div<{
+  theme: ThemeInterface;
+  altNum?: boolean;
+  header?: boolean;
+}>`
+  display: flex;
+  flex-direction: row
+  justify-content: space-between;
+  align-items: center;
+  width: 100%;
+  height: 60px;
+  padding: 0 24px;
+  background: ${(props) =>
+    props.altNum ? props.theme.list.listItemAltBg : props.theme.list.listBg};
+  ${({ header, theme }) =>
+    header &&
+    `
+      //border-bottom: 4px solid ${theme.accent.green};
+      border-bottom: 1px solid #1c2126;
+  `}
+
+  &:hover {
+    background: ${(props) =>
+      addAlpha(
+        props.altNum ? props.theme.list.listItemAltBg : props.theme.list.listBg,
+        0.5
+      )};
+  }
+`;
+export const StyledTableValueStatus = styled.div<{
+  theme: ThemeInterface;
+  width?: number;
+  status?: string;
+}>`
+  text-transform: uppercase;
+  width: ${(props) => (props.width ? props.width + "px" : "100%")};
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+  color: ${(props) =>
+    props.status == "Departed" || props.status == "Arrived"
+      ? props.theme.status.success
+      : props.status == "Cancelled" || props.status == "Unmapped"
+      ? props.theme.status.error
+      : props.theme.status.warning};
+`;
+
+// ---------------------------------------------
+// generic col/row
+// ---------------------------------------------
 
 export const Col = styled.div`
   display: flex;
@@ -291,8 +335,37 @@ export const Col = styled.div`
   align-items: flex-start;
 `;
 
-export const StyledTag = styled(Tag)`
-  height: 32px;
-  line-height: 32px;
-  font-size: ${(props) => props.theme.general.fontSize};
+export const Row = styled.div`
+  display: flex;
+  flex-direction: row;
+  justify-content: flex-start;
+  align-items: flex-start;
+`;
+
+// ---------------------------------------------
+// animations
+// ---------------------------------------------
+
+export const fadeIn = keyframes`
+  from {
+    transform: scale(.25);
+    opacity: 0;
+  }
+
+  to {
+    transform: scale(1);
+    opacity: 1;
+  }
+`;
+
+export const scaleInX = keyframes`
+  from {
+    transform: scale(.50, 1);
+    opacity: 1;
+  }
+
+  to {
+    transform: scale(1., 1.);
+    opacity: 1;
+  }
 `;

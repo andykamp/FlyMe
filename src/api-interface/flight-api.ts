@@ -53,12 +53,14 @@ interface AirportDataResponse {
   };
 }
 
-interface EnrichedInfo {
+export interface EnrichedInfo {
   flight_id: string;
   departureTime: string;
   arrivalTime: string;
   departureTimeFormatted: string;
   arrivalTimeFormatted: string;
+  departureTimestamp: number;
+  arrivalTimestamp: number;
   duration: string;
   departureStatus: string;
   arrivalStatus: string;
@@ -135,16 +137,28 @@ export class FlightApi extends BaseEndpoint {
     ) => {
       const aDate = new Date(arrivalInfo.schedule_time);
       const dDate = new Date(departureInfo.schedule_time);
+      const aTimestamp = aDate.getTime();
+      const dTimestamp = dDate.getTime();
 
-      const aDateFormatted = `${formatTo2Digits(
-        aDate.getHours()
-      )}:${formatTo2Digits(aDate.getMinutes())}`;
-      const dDateFormatted = `${formatTo2Digits(
-        dDate.getHours()
-      )}:${formatTo2Digits(dDate.getMinutes())}`;
+      const aDateFormatted = arrivalInfo.schedule_time
+        ? `${formatTo2Digits(aDate.getHours())}:${formatTo2Digits(
+            aDate.getMinutes()
+          )}`
+        : "-";
+      const dDateFormatted = departureInfo.schedule_time
+        ? `${formatTo2Digits(dDate.getHours())}:${formatTo2Digits(
+            dDate.getMinutes()
+          )}`
+        : "-";
 
       const duration = diff_hours(dDate, aDate) + "h";
-      return { duration, aDateFormatted, dDateFormatted };
+      return {
+        aTimestamp,
+        dTimestamp,
+        duration,
+        aDateFormatted,
+        dDateFormatted,
+      };
     };
 
     const getFullName = (airport: string): string => {
@@ -162,13 +176,18 @@ export class FlightApi extends BaseEndpoint {
       return airlines[airline];
     };
 
-    const { duration, aDateFormatted, dDateFormatted } = getTime(
-      arrivalInfo,
-      departureInfo
-    );
+    const {
+      aTimestamp,
+      dTimestamp,
+      duration,
+      aDateFormatted,
+      dDateFormatted,
+    } = getTime(arrivalInfo, departureInfo);
 
     return {
       flight_id: flight_id,
+      departureTimestamp: dTimestamp,
+      arrivalTimestamp: aTimestamp,
       departureTime: departureInfo.schedule_time,
       arrivalTime: arrivalInfo.schedule_time,
       departureTimeFormatted: dDateFormatted,
@@ -238,6 +257,11 @@ export class FlightApi extends BaseEndpoint {
 
     const t1_tot = performance.now();
 
+    // only query remainder of day
+    let d = new Date();
+    let h = d.getHours();
+    let hoursUntilEndOfDay = 24 - h;
+
     // stack up all calls  in a promise array
     const promises = [];
     for (let a of airportsInNorway) {
@@ -246,7 +270,7 @@ export class FlightApi extends BaseEndpoint {
         this.getAirportData({
           airport,
           timeFrom: 0,
-          timeTo: 24,
+          timeTo: hoursUntilEndOfDay,
         })
       );
     }
