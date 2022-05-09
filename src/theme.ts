@@ -15,7 +15,7 @@ export function addAlpha(color: string, opacity: number) {
 // ---------------------------------------------
 
 // font
-export const fontFamily = "Poppings";
+export const fontFamily = "Poppins";
 export const fontSizeTitle = "22px";
 export const fontSize = "16px";
 

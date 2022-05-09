@@ -76,11 +76,9 @@ function App() {
         <GlobalStyle />
 
         <StyledApp>
-          <Header loading={loading} activePage="somethign" />
-          <StyledContent>
-            <Outlet context={[flightData, setFlightData]} />
-            {initiating && <LoadingScreen progress={progress} />}
-          </StyledContent>
+          <Header loading={loading} />
+          <Outlet context={[flightData, setFlightData]} />
+          {initiating && <LoadingScreen progress={progress} />}
         </StyledApp>
       </ThemeProvider>
     </ThemeContext.Provider>

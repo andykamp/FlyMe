@@ -1,8 +1,9 @@
-@import url(https://fonts.googleapis.com/css?family=Poppings);
+@import url(https://fonts.googleapis.com/css?family=Poppins);
 
 body {
   margin: 0;
-  font-family: "Poppings";
+  font-family: "Poppins";
+  letter-spacing: 0.05em;
 }
 
 code {

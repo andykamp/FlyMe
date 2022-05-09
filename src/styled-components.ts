@@ -1,6 +1,6 @@
 import styled, { createGlobalStyle } from "styled-components";
-import { Select } from "antd";
-import { ThemeInterface } from "./theme";
+import { Tag, Select } from "antd";
+import { ThemeInterface, addAlpha } from "./theme";
 
 export const GlobalStyle = createGlobalStyle<{ theme: ThemeInterface }>`
   body {
@@ -27,6 +27,9 @@ export const StyledApp = styled.div<{ theme: ThemeInterface }>`
 `;
 
 export const StyledHeader = styled.header<{ theme: ThemeInterface }>`
+  position: fixed;
+  top: 0px;
+  left: 0px;
   display: flex;
   flex-direction: row;
   justify-content: center;
@@ -36,7 +39,6 @@ export const StyledHeader = styled.header<{ theme: ThemeInterface }>`
   min-height: 80px;
   padding: 0 24px;
   background: ${(props) => props.theme.header.headerBg};
-  margin-bottom: 24px;
 `;
 
 export const StyledLogoContainer = styled.div<{ theme: ThemeInterface }>`
@@ -54,8 +56,41 @@ export const StyledHeaderContent = styled.div<{ theme: ThemeInterface }>`
   justify-content: space-between;
   align-items: center;
   height: 100%;
-  width: 75rem;
-  max-width: 75rem;
+  width: 100%;
+  // max-width: 75rem;
+`;
+
+export const StyledHeaderMenu = styled.div<{ theme: ThemeInterface }>`
+  display: flex;
+  flex-direction: row;
+  justify-content: flex-end;
+  align-items: center;
+  height: 100%;
+  gap: 24px;
+`;
+
+export const StyledHeaderItem = styled.div<{
+  theme: ThemeInterface;
+  active: boolean;
+}>`
+  color: ${(props) => props.theme.general.titleColor};
+  font-weight: light;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  cursor: pointer;
+  &:hover {
+    color: ${(props) =>
+      props.active
+        ? props.theme.accent.green
+        : addAlpha(props.theme.general.titleColor, 0.5)};
+  }
+
+  ${({ active, theme }) =>
+    active &&
+    `
+  color: ${theme.accent.green};
+
+  `}
 `;
 
 export const StyledContent = styled.div<{ theme: ThemeInterface }>`
@@ -64,9 +99,11 @@ export const StyledContent = styled.div<{ theme: ThemeInterface }>`
   justify-content: flex-start;
   align-items: center;
   height: 100vh;
-  width: 75rem;
-  max-width: 75rem;
+  width: 75%;
+  // max-width: 75rem;
   gap: 24px;
+  margin-top: 80px;
+  padding: 24px;
 `;
 
 export const StyledIntroContainer = styled.div<{ theme: ThemeInterface }>`
@@ -96,7 +133,7 @@ export const StyledPanel = styled.div<{ theme: ThemeInterface }>`
   color: ${(props) => props.theme.general.titleColor};
   background: ${(props) => props.theme.general.panelBg};
   border: 1px solid #1c2126;
-  border-radius: 8px;
+  border-radius: 2px;
 `;
 
 export const StyledTabs = styled.div<{ theme: ThemeInterface }>`
@@ -105,7 +142,7 @@ export const StyledTabs = styled.div<{ theme: ThemeInterface }>`
   justify-content: center;
   align-items: center;
   width: 100%;
-  height: 80px;
+  height: 60px;
 `;
 export const StyledTab = styled.div<{
   theme: ThemeInterface;
@@ -123,8 +160,8 @@ export const StyledTab = styled.div<{
   background: ${(props) =>
     props.active ? props.theme.general.panelBg : "transparent"};
   border: 1px solid #1c2126;
-  border-top-left-radius: 8px;
-  border-top-right-radius: 8px;
+  //  border-top-left-radius: 8px;
+  // border-top-right-radius: 8px;
 `;
 
 export const StyledSelect = styled(Select)<{ theme: ThemeInterface }>`
@@ -140,8 +177,8 @@ export const StyledListPanel = styled.div<{ theme: ThemeInterface }>`
   color: ${(props) => props.theme.general.titleColor};
   background: ${(props) => props.theme.general.panelBg};
   border: 1px solid #1c2126;
-  border-bottom-left-radius: 8px;
-  border-bottom-right-radius: 8px;
+  // border-bottom-left-radius: 8px;
+  // border-bottom-right-radius: 8px;
 `;
 
 export const StyledList = styled.div<{ theme: ThemeInterface }>`
@@ -179,6 +216,8 @@ export const StyledTitle = styled.div<{ theme: ThemeInterface }>`
   font-size: ${(props) => props.theme.general.fontSizeTitle};
   color: ${(props) => props.theme.general.titleColor};
   font-weight: bold;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
 `;
 
 export const StyledLabel = styled.div<{ theme: ThemeInterface }>`
@@ -217,6 +256,7 @@ export const StyledTableValue = styled.div<{
   width?: number;
   header?: boolean;
 }>`
+  text-transform: uppercase;
   color: ${(props) => props.theme.general.textColor};
   width: ${(props) => (props.width ? props.width + "px" : "100%")};
   overflow: hidden;
@@ -227,6 +267,14 @@ export const StyledTableValue = styled.div<{
     `
     font-weight:bold;
   `}
+`;
+
+export const StyledFromToHeader = styled.div<{ theme: ThemeInterface }>`
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  align-items: center;
+  width: 100%;
 `;
 
 export const Row = styled.div`
@@ -241,4 +289,10 @@ export const Col = styled.div`
   flex-direction: column;
   justify-content: flex-start;
   align-items: flex-start;
+`;
+
+export const StyledTag = styled(Tag)`
+  height: 32px;
+  line-height: 32px;
+  font-size: ${(props) => props.theme.general.fontSize};
 `;

@@ -5,6 +5,7 @@ import { SyncOutlined } from "@ant-design/icons";
 import { useOutletContext } from "react-router-dom";
 
 import {
+  StyledContent,
   StyledPanel,
   StyledTitle,
   StyledSelect,
@@ -25,6 +26,7 @@ export const ArrivalsDepartures = ({
   statusCodes,
   airlines,
 }: Props) => {
+  // TODO do this for ailines and status code also
   const [flightData, setFlightData] = useOutletContext();
 
   const [selectedAirport, setSelectedAirport] = useState<null | string>(null);
@@ -44,18 +46,11 @@ export const ArrivalsDepartures = ({
   };
 
   return (
-    <>
+    <StyledContent>
       <StyledPanel>
         <StyledIntroContainer>
           <StyledIntroItem>
-            <StyledTitle>Select airport to see arrivals/departures</StyledTitle>
-            <StyledParagraph>
-              Read more about Avinor&nbsp;
-              <a href="https://www.avinor.no" target="_blank">
-                here
-              </a>
-              .
-            </StyledParagraph>
+            <StyledTitle>Arrivals/departures</StyledTitle>
             <StyledSelect
               style={{ width: 300, marginTop: 8 }}
               onChange={airportChanged}
@@ -107,7 +102,7 @@ export const ArrivalsDepartures = ({
           airlines={airlines}
         />
       )}
-    </>
+    </StyledContent>
   );
 };
 

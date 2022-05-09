@@ -17,6 +17,99 @@ import {
 // List container
 // ---------------------------------------------
 
+interface FilteredList {
+  fromAirport: string;
+  toAirport: string;
+  flightData: {
+    arrivals: { [key: string]: FlightInterface };
+    departures: { [key: string]: FlightInterface };
+    allFlightIds: string[];
+  };
+  airlines: { [key: string]: string };
+  statusCodes: { [key: string]: string };
+}
+
+export const FilteredList = ({
+  fromAirport,
+  toAirport,
+  flightData,
+  statusCodes,
+  airlines,
+}: FilteredList) => {
+  let relevantFlights;
+  if (!fromAirport || !toAirport) relevantFlights = [];
+  else
+    relevantFlights = flightData.allFlightIds.filter((flight_id) => {
+      const f =
+        flightData.departures[flight_id] || flightData.arrivals[flight_id];
+
+      return (
+        f.source_airport.toUpperCase() === fromAirport.toUpperCase() &&
+        f.airport === toAirport.toUpperCase()
+      );
+    });
+  const flightsWithInfo = relevantFlights.map((f: string) =>
+    ApiContainer.FlightApi._getEnrichedFlightInfo(
+      f,
+      flightData,
+      airlines,
+      statusCodes
+    )
+  );
+
+  const isEmpty = !flightsWithInfo.length;
+
+  return (
+    <Row style={{ gap: 24, width: "100%" }}>
+      {!isEmpty && (
+        <StyledListPanel>
+          <StyledList>
+            <ListHeader />
+            {flightsWithInfo.map((f, i) => (
+              <ListItem key={i} flightInfo={f} index={i} />
+            ))}
+          </StyledList>
+        </StyledListPanel>
+      )}
+      {isEmpty && (
+        <StyledListPanel style={{ height: 80, padding: 24 }}>
+          No results on this trip...
+        </StyledListPanel>
+      )}
+    </Row>
+  );
+};
+
+export const ListHeader = () => {
+  return (
+    <StyledListItem header>
+      <Row style={{ gap: 8 }}>
+        <StyledTableValue header width={60}>
+          Flight
+        </StyledTableValue>
+        <StyledTableValue header width={100}>
+          Airline
+        </StyledTableValue>
+        <StyledTableValue header width={180}>
+          Departure
+        </StyledTableValue>
+        <StyledTableValue header width={180}>
+          Arrival
+        </StyledTableValue>
+        <StyledTableValue header width={200}>
+          From
+        </StyledTableValue>
+        <StyledTableValue header width={200}>
+          to
+        </StyledTableValue>
+      </Row>
+      <StyledTableValue header width={150}>
+        Remarks
+      </StyledTableValue>
+    </StyledListItem>
+  );
+};
+
 interface FilteredListSeperatedProps {
   selectedAirport: string;
   tab: "arrivals" | "departures";
@@ -164,6 +257,40 @@ export const ListHeaderDepartures = () => {
 // List items
 // ---------------------------------------------
 
+export const ListItem = ({ flightInfo, index }: ListItemInterface) => {
+  const {
+    flight_id,
+    arrivalTimeFormatted,
+    departureTimeFormatted,
+    from_airport_full,
+    from_city,
+    to_airport_full,
+    to_city,
+    arrivalStatus,
+    airline,
+  } = flightInfo;
+
+  return (
+    <StyledListItem key={flight_id} altNum={index % 2 == 0}>
+      <Row style={{ gap: 8 }}>
+        <StyledTableValue width={60}>{flight_id}</StyledTableValue>
+        <StyledTableValue width={100}>{airline}</StyledTableValue>
+
+        <StyledTableValue width={180}>
+          {departureTimeFormatted}
+        </StyledTableValue>
+        <StyledTableValue width={180}>{arrivalTimeFormatted}</StyledTableValue>
+        <Tooltip title={from_airport_full}>
+          <StyledTableValue width={200}>{from_city}</StyledTableValue>
+        </Tooltip>
+        <Tooltip title={to_airport_full}>
+          <StyledTableValue width={200}>{to_city}</StyledTableValue>
+        </Tooltip>
+      </Row>
+      <StyledTableValue width={150}>{arrivalStatus}</StyledTableValue>
+    </StyledListItem>
+  );
+};
 interface ListItemInterface {
   flightInfo: any;
   index: number;

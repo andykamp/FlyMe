@@ -1,15 +1,16 @@
 import Logo from "./logo.svg";
-import { Tooltip, Tag } from "antd";
-import { Link } from "react-router-dom";
+import { Tooltip } from "antd";
 import { CheckCircleOutlined, SyncOutlined } from "@ant-design/icons";
-import { useNavigate } from "react-router-dom";
+import { useLocation, useNavigate, Link } from "react-router-dom";
 
 import {
   StyledHeader,
   StyledLogoContainer,
   StyledHeaderContent,
+  StyledHeaderItem,
   StyledTitle,
-  Row,
+  StyledHeaderMenu,
+  StyledTag,
 } from "./styled-components";
 
 interface Props {
@@ -17,44 +18,58 @@ interface Props {
   loading: boolean;
 }
 
-export const Header = ({ loading, activePage }: Props) => {
+export const Header = ({ loading }: Props) => {
   const navigate = useNavigate();
+  const location = useLocation();
+  const currentRoute = location.pathname;
   return (
-    <StyledHeader>
+    <StyledHeader
+      style={{ background: currentRoute == "/" ? "transparent" : "inherit" }}
+    >
       <StyledHeaderContent>
         <StyledLogoContainer onClick={() => navigate("/", { replace: true })}>
           <img src={Logo} alt="logo" />
           <StyledTitle>API Avinor</StyledTitle>
         </StyledLogoContainer>
-        <Row style={{ gap: 8 }}>
+        <StyledHeaderMenu>
           {/*<div onClick={toggleTheme}>toggle theme</div>*/}
-          <Link to="/arrdep">Arrivals/Departures</Link>
-          <Link to="/fromto">From/To</Link>
+          <StyledHeaderItem
+            active={currentRoute == "/fromto"}
+            onClick={() => navigate("/fromto", { replace: true })}
+          >
+            From/To Planner
+          </StyledHeaderItem>
+          <StyledHeaderItem
+            active={currentRoute == "/arrdep"}
+            onClick={() => navigate("/arrdep", { replace: true })}
+          >
+            Arrivals/Departures
+          </StyledHeaderItem>
 
           <div>
             {loading ? (
               <Tooltip title=" Syncing requested data with Avinor. This website fetches data every 3 minutes. ">
-                <Tag
+                <StyledTag
                   style={{ background: "rgba(0,0,0,0.2)" }}
                   icon={<SyncOutlined spin />}
                   color="processing"
                 >
                   Syncing data
-                </Tag>
+                </StyledTag>
               </Tooltip>
             ) : (
               <Tooltip title=" All requested data is currently synced with Avinor. This website fetches data every 3 minutes. ">
-                <Tag
+                <StyledTag
                   style={{ background: "rgba(0,0,0,0.2)" }}
                   icon={<CheckCircleOutlined />}
                   color="success"
                 >
                   Data synced
-                </Tag>
+                </StyledTag>
               </Tooltip>
             )}
           </div>
-        </Row>
+        </StyledHeaderMenu>
       </StyledHeaderContent>
     </StyledHeader>
   );
