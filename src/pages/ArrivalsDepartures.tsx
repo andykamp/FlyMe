@@ -1,11 +1,11 @@
-import { useState, useEffect } from "react";
+import { useContext, useState, useEffect } from "react";
 import styled from "styled-components";
 import { airportsInNorway } from "../data";
 import { Select, Tag } from "antd";
 import { SyncOutlined } from "@ant-design/icons";
 import { useOutletContext } from "react-router-dom";
 import ArrDep from "../ArrDep.svg";
-
+import { StatusCodeContext, AirlinesContext } from "../App";
 import {
   StyledContent,
   StyledPanel,
@@ -26,16 +26,14 @@ const StyledImg = styled.img`
 interface Props {
   loading: any;
   statusCodes: any;
-  airlines: any;
 }
 
-export const ArrivalsDepartures = ({
-  loading,
-  statusCodes,
-  airlines,
-}: Props) => {
+export const ArrivalsDepartures = ({ loading }: Props) => {
   // TODO do this for ailines and status code also
   const [flightData, setFlightData] = useOutletContext();
+
+  const statusCodes = useContext(StatusCodeContext);
+  const airlines = useContext(AirlinesContext);
 
   const [selectedAirport, setSelectedAirport] = useState<null | string>(null);
   const [tab, setTab] = useState<"arrivals" | "departures">("arrivals");
@@ -107,7 +105,4 @@ export const ArrivalsDepartures = ({
   );
 };
 
-ArrivalsDepartures.defaultProps = {
-  statusCodes: {},
-  airlines: {},
-};
+ArrivalsDepartures.defaultProps = {};

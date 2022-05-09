@@ -1,4 +1,5 @@
 import { useState, useEffect } from "react";
+import { createContext } from "react";
 import { ApiContainer } from "./api-interface";
 import { ThemeProvider } from "styled-components";
 import { ThemeContext, getTheme } from "./theme";
@@ -13,6 +14,11 @@ import { Outlet } from "react-router-dom";
 
 const DYNAMIC_POLL_INTERVAL = 3 * 60 * 1000; // 3 minutes as suggested in doc
 const STATIC_POLL_INTERVAL = 24 * 3600 * 1000; // 24 hours as suggested in doc
+
+// create context for data
+
+export const StatusCodeContext = createContext({});
+export const AirlinesContext = createContext({});
 
 //
 
@@ -77,8 +83,12 @@ function App() {
 
         <StyledApp>
           <Header loading={loading} />
-          <Outlet context={[flightData, setFlightData]} />
-          {initiating && <LoadingScreen progress={progress} />}
+          <StatusCodeContext.Provider value={statusCodes}>
+            <AirlinesContext.Provider value={airlines}>
+              <Outlet context={[flightData, setFlightData]} />
+              {initiating && <LoadingScreen progress={progress} />}
+            </AirlinesContext.Provider>
+          </StatusCodeContext.Provider>
         </StyledApp>
       </ThemeProvider>
     </ThemeContext.Provider>

@@ -14,7 +14,6 @@ import {
 } from "./styled-components";
 
 interface Props {
-  activePage: any;
   loading: boolean;
 }
 

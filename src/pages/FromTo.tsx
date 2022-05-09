@@ -1,11 +1,11 @@
-import { useState, useEffect } from "react";
+import { useContext, useState } from "react";
 import styled from "styled-components";
 import { airportsInNorway } from "../data";
 import { Select, Tag } from "antd";
 import { SwapOutlined } from "@ant-design/icons";
 import { useOutletContext } from "react-router-dom";
 import FromToImg from "../Fromto.svg";
-
+import { StatusCodeContext, AirlinesContext } from "../App";
 import {
   StyledContent,
   StyledPanel,
@@ -19,8 +19,6 @@ import { FilteredList } from "../List";
 
 interface Props {
   loading: any;
-  statusCodes: any;
-  airlines: any;
 }
 
 const StyledImg = styled.img`
@@ -29,9 +27,12 @@ const StyledImg = styled.img`
   width: 50%;
 `;
 
-export const FromTo = ({ loading, statusCodes, airlines }: Props) => {
+export const FromTo = ({ loading }: Props) => {
   // TODO do this for ailines and status code also
   const [flightData, setFlightData] = useOutletContext();
+
+  const statusCodes = useContext(StatusCodeContext);
+  const airlines = useContext(AirlinesContext);
 
   const [fromAirport, setFromAirport] = useState<null | string>(null);
   const [toAirport, setToAirport] = useState<null | string>(null);
@@ -123,7 +124,4 @@ export const FromTo = ({ loading, statusCodes, airlines }: Props) => {
   );
 };
 
-FromTo.defaultProps = {
-  statusCodes: {},
-  airlines: {},
-};
+FromTo.defaultProps = {};
