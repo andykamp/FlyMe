@@ -1,6 +1,6 @@
 import styled, { keyframes } from "styled-components";
 import ReactDOM from "react-dom";
-import Logo from "../logo.svg";
+import Logo from "../assets/logo.svg";
 import { Progress } from "antd";
 import { StyledLogoContainer, StyledTitle } from "../styled-components";
 

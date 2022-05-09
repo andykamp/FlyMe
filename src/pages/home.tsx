@@ -1,5 +1,5 @@
 import styled, { keyframes } from "styled-components";
-import Hero from "../hero.svg";
+import Hero from "../assets/hero.svg";
 import { StyledTitle, StyledParagraph } from "../styled-components";
 import { addAlpha } from "../theme";
 import { useNavigate } from "react-router-dom";
@@ -109,7 +109,7 @@ export const Home = () => {
           <StyledButton onClick={() => navigate("/fromto", { replace: true })}>
             Flight planner
           </StyledButton>
-          <StyledDivider>or</StyledDivider>
+          <StyledDivider>and</StyledDivider>
           <StyledButton onClick={() => navigate("/arrdep", { replace: true })}>
             Arrivals/Departures
           </StyledButton>

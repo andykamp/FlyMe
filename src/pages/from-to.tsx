@@ -1,11 +1,11 @@
 import { useContext, useState } from "react";
 import styled from "styled-components";
-import { airportsInNorway } from "../data";
+import airportsInNorway from "../assets/airports-in-norway.json";
 import { Select, Tag } from "antd";
 import { SwapOutlined } from "@ant-design/icons";
 import { useOutletContext } from "react-router-dom";
-import FromToImg from "../Fromto.svg";
-import { StatusCodeContext, AirlinesContext } from "../App";
+import FromToImg from "../assets/from-to.svg";
+import { StatusCodeContext, AirlinesContext } from "../app";
 import {
   StyledContent,
   StyledPanel,
@@ -15,7 +15,7 @@ import {
   StyledIntroContainer,
   StyledFromToHeader,
 } from "../styled-components";
-import { FilteredList } from "../List";
+import { FilteredList } from "../list";
 
 interface Props {
   loading: any;
@@ -52,7 +52,7 @@ export const FromTo = ({ loading }: Props) => {
       <StyledPanel>
         <StyledIntroContainer>
           <StyledIntroItem>
-            <StyledTitle>From/to Planner</StyledTitle>
+            <StyledTitle>Flight Planner</StyledTitle>
 
             <StyledFromToHeader>
               <StyledSelect

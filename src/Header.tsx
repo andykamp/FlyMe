@@ -1,7 +1,7 @@
-import Logo from "./logo.svg";
+import Logo from "./assets/logo.svg";
 import { Tooltip } from "antd";
 import { CheckCircleOutlined, SyncOutlined } from "@ant-design/icons";
-import { useLocation, useNavigate, Link } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 
 import {
   StyledHeader,
@@ -36,7 +36,7 @@ export const Header = ({ loading }: Props) => {
             active={currentRoute == "/fromto"}
             onClick={() => navigate("/fromto", { replace: true })}
           >
-            From/To Planner
+            Flight Planner
           </StyledHeaderItem>
           <StyledHeaderItem
             active={currentRoute == "/arrdep"}

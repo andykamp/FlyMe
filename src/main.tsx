@@ -1,11 +1,11 @@
 import React from "react";
 import ReactDOM from "react-dom/client";
-import App from "./App";
+import App from "./app";
 import "./index.css";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
-import { ArrivalsDepartures } from "./pages/ArrivalsDepartures";
-import { FromTo } from "./pages/FromTo";
-import { Home } from "./pages/Home";
+import { ArrivalsDepartures } from "./pages/arrivals-departures";
+import { FromTo } from "./pages/from-to";
+import { Home } from "./pages/home";
 
 ReactDOM.createRoot(document.getElementById("root")!).render(
   <React.StrictMode>

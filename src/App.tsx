@@ -3,9 +3,9 @@ import { createContext } from "react";
 import { ApiContainer } from "./api-interface";
 import { ThemeProvider } from "styled-components";
 import { ThemeContext, getTheme } from "./theme";
-import { Header } from "./Header";
+import { Header } from "./header";
 import { GlobalStyle, StyledApp, StyledContent } from "./styled-components";
-import { LoadingScreen } from "./pages/LoadingScreen";
+import { LoadingScreen } from "./pages/loading-screen";
 import { Outlet } from "react-router-dom";
 
 // https://avinor.no/konsern/tjenester/flydata/flydata-i-xml-format recommend polling

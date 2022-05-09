@@ -1,11 +1,11 @@
-import { useContext, useState, useEffect } from "react";
+import { useContext, useState } from "react";
 import styled from "styled-components";
-import { airportsInNorway } from "../data";
+import airportsInNorway from "../assets/airports-in-norway.json";
 import { Select, Tag } from "antd";
 import { SyncOutlined } from "@ant-design/icons";
 import { useOutletContext } from "react-router-dom";
-import ArrDep from "../ArrDep.svg";
-import { StatusCodeContext, AirlinesContext } from "../App";
+import ArrDep from "../assets/arr-dep.svg";
+import { StatusCodeContext, AirlinesContext } from "../app";
 import {
   StyledContent,
   StyledPanel,
@@ -15,7 +15,7 @@ import {
   StyledIntroItem,
   StyledIntroContainer,
 } from "../styled-components";
-import { FilteredListSeperated } from "../List";
+import { FilteredListSeperated } from "../list";
 
 const StyledImg = styled.img`
   margin-top: 40px;

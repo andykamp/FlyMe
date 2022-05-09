@@ -1,7 +1,7 @@
 import { BaseEndpoint } from "./base-endpoint";
 import { callEndpoint } from "./utils";
 import X2JS from "x2js";
-import { airportsInNorway } from "../data";
+import airportsInNorway from "../assets/airports-in-norway.json";
 import { diff_hours, formatTo2Digits } from "./utils";
 import { statusCodeInterface } from "./status-api";
 
