@@ -1,35 +1,56 @@
-# Take Home Assignment
+# Approach and solution 
 
-Avinor provides an API to retrieve the flights to specific airports within Norway. For example, the following request will respond with all the flights into and out of Oslo airport:
+## Possible approaches: 
+- **Server side rendering**. Requests are polled and cached every 3min and 24 hours and cached on the server. Then delivered to clients with no 'compute' latency on the server. Basically a shared cache. Less work for avinors server.
+- **Set up own server that polls and cach the data in e.g redis locally**. Then clients query this server instead. Same concept as SSR but does not require a SSR framework atleast. 
+- **Client side queries on relevant aiports only.** Longer time per fetch if on switch, but can be alliviated with with private caching, seeing alot of the same airports will be queried each time. Can also use last_update to reduce payload each time.  
+- **Client side fetch-all-data-every-3-minutes.** Longer initial wait time, more memory that is unused, more queries to server, but once loaded it can give a super fast user experience after initial load. 
 
-> https://flydata.avinor.no/XmlFeed.asp?TimeFrom=1&TimeTo=24&airport=OSL&lastUpdate=2022-04-20T15:00:00Z
+## Choosen approach 
+**Client side queries on relevant aiports only**
+  - Might not be ideal, but fastest to implement and no server involved
+  - Uses a cors server on heroku to prevent CORS errors
 
-The names of all the airports within Norway can be found here:
+## How to use
+Clone repo and run ```yarn && yarn vite ```
 
-> https://gist.github.com/freshteapot/f5770a6ab29a104293fa6c0576ed9bb9
+In addition, the application is deployed to two urls: 
+- with a external proxy cerver for CORS: [avinor-api-corsproxy.surge.sh](https://avinor-api-corsproxy.surge.sh/).
+- without any proxy stuff. You need to use a chrome extention or something: [avinor-api-nocorsproxy.surge.sh](https://avinor-api-nocorsproxy.surge.sh/).
 
-Your task is to build a simple Web application that uses this API to display information about flights into and out of a selected airports within Norway in the current 24-hour period (i.e. TimeFrom=1&TimeTo=24).
+![image](./snapshot.png)
 
-1.	The UI should allow the user to select an airport within Norway using the **full name** of the airport.
-2.	In response to an airport selection, a table should be displayed which shows all the **domestic** flights into (arrivals) and out of (departures) that airport. The table should present at least the following information:
-    -	Flight name (<flight_id>).
-    -	Scheduled departure time (<schedule_time>).
-    -	Scheduled arrival time (<schedule_time>).
-    -	The full name of the source/destination airport (<airport> mapped to ‘name’).
 
-This task is complicated by the fact that the API will only provide the scheduled time relevant to the requested airport:
-1. The departure time for departing flights.
-2. The arrival time for arriving flights.
+### Interesting questions to answer
+- webworkers?
+    - Might be nice, but as payload is small the parsing/formatting time might very well be equal to the copy operation between the treads. 
+- shared vs local cache?
+    - Depends on the approach (ssr or client-side). Would prefer not to add custom cache logic atleast. Fetch API and XHR has build in cache with ttt, but might have problems with server headeres(cors etc)
+- test?
+    - No. Always nice but not on this small project 
 
-So, in addition to requesting the flights for the selected airport, additional requests must be sent to each airport that the flight is departing to or arriving from to get the corresponding scheduled time. I.e.:
-1. The scheduled arrival time for flights departing from the selected airport.
-2. The scheduled departure time for flights arriving at the selected airport.
 
-Flights between airports can be matched using the “flight_id” and “arr_dep” fields. The scheduled time for flights that cannot be matched should be indicated – e.g. by stating “unknown”
-It is important to ensure that requests to get the corresponding scheduled times are performed efficiently.
 
-**Additional information:**
-1. Domestic flights will have the <dom_int> flag set to ‘D’.
-2. The Avinor servers do not appear to support CORS so you will need to use a CORS proxy service such as Local CORS Proxy (https://www.npmjs.com/package/local-cors-proxy).
-3. An explanation of the flight API can be found at https://avinor.no/konsern/tjenester/flydata/flydata-i-xml-format. 
-4. Displaying additional information about each flight will be advantageous. For example, including the flight status in an intuitive way (e.g. background color / icons). Flight status explanations can be found at https://flydata.avinor.no/flightStatuses.asp
+### Some of the edge cases to handle:
+- the API returns different formats based on if a airport has 0, 1, or  2+ flights
+- some flights might not match
+- CORS using a https://github.com/Rob--W/cors-anywhere server to proxy the request.
+
+
+### TODOs and notes about the implementation:
+- to inconsisten with typescript () and ({}) inputs.
+- takes some shortcuts with type 'any' when it gets complicated. Also still some typescript errors lying around. Not good.
+- incosistent with type/interface naming
+- not using update_key to minimize the paylaod
+- error handling not ideal 
+- error handling for CORS not ideal
+- visulize unmatched flights not ideal
+- responsiveness not ideal. Only works on a certain range of screen sizes (not on mobile)
+- not added proper private caching
+- pushed directly to master. But only member so not the worst thing that can happen
+
+# TODO: 
+- add new remote repo
+    - git remote add origin git@github.com:andykamp/FlyMe.git
+    - git branch -M main
+    - git push -u origin main
