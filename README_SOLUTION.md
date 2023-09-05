@@ -9,6 +9,7 @@
 ## Choosen approach 
 **Client side queries on relevant aiports only**
   - Might not be ideal, but fastest to implement and no server involved
+  - Uses a cors server on heroku to prevent CORS errors
 
 ## How to use
 Clone repo and run ```yarn && yarn vite ```
@@ -47,3 +48,9 @@ In addition, the application is deployed to two urls:
 - responsiveness not ideal. Only works on a certain range of screen sizes (not on mobile)
 - not added proper private caching
 - pushed directly to master. But only member so not the worst thing that can happen
+
+# TODO: 
+- add new remote repo
+    - git remote add origin git@github.com:andykamp/FlyMe.git
+    - git branch -M main
+    - git push -u origin main
